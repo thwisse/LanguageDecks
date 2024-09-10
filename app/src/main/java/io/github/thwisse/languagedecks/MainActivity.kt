@@ -1,6 +1,8 @@
 package io.github.thwisse.languagedecks
 
+import AdapterDecks
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
@@ -39,18 +41,20 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // RecyclerView ayarları
+        // Örnek desteyi yükle (ilk açılışta gerekli)
+        loadSampleDeckIfNeeded()
+
+        // RecyclerView'ı bul ve layoutManager'ı ayarla
         recyclerView = binding.rvDecks
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // İlk kez çalıştırılıyorsa örnek deste yükle
-        loadSampleDeckIfNeeded()
-
-        // SharedPreferences'tan desteleri yükle
+        // SharedPreferences'tan desteleri oku
         loadDecksFromPreferences()
 
         // Adapter'i oluştur ve RecyclerView'a bağla
-        adapterDecks = AdapterDecks(deckList)
+        adapterDecks = AdapterDecks(deckList) { selectedDeck ->
+            openDeckActivity(selectedDeck)  // Tıklanan desteyi aç
+        }
         recyclerView.adapter = adapterDecks
 
         binding.fabAddDeck.setOnClickListener {
@@ -59,6 +63,33 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    // RecyclerView itemına tıklanınca DeckActivity'yi aç
+    private fun openDeckActivity(deckName: String) {
+        val intent = Intent(this, DeckActivity::class.java)
+        intent.putExtra("deckName", deckName)  // Deste adını intent ile gönder
+
+        // Eğer bu örnek deste ise, kartlarını da DeckActivity'ye gönderelim
+        val sharedPreferences = getSharedPreferences("DecksPrefs", Context.MODE_PRIVATE)
+        val cardsJson = sharedPreferences.getString("unlearnedList", null)
+
+        // Kartları intent ile DeckActivity'ye gönder
+        intent.putExtra("cardsJson", cardsJson)
+
+        startActivity(intent)
+    }
+
+    // SharedPreferences'tan desteleri yükle
+    private fun loadDecksFromPreferences() {
+        val sharedPreferences = getSharedPreferences("DecksPrefs", Context.MODE_PRIVATE)
+        val json = sharedPreferences.getString("deckList", null)
+
+        if (json != null) {
+            val type = object : TypeToken<MutableList<String>>() {}.type
+            deckList = Gson().fromJson(json, type)
+        }
+    }
+
+    // Yeni bir deste eklemek için dialog oluşturma
     private fun showAddDeckDialog() {
         val dialogBinding = DialogAddDeckBinding.inflate(layoutInflater)
 
@@ -70,13 +101,9 @@ class MainActivity : AppCompatActivity() {
 
                 if (deckName.isNotEmpty()) {
                     deckList.add(deckName)
-                    adapterDecks.notifyDataSetChanged()
-
-                    // Yeni deste JSON dosyasına kaydedilsin
-                    saveNewDeckToFile(deckName)
-
-                    // SharedPreferences'a kaydet
-                    saveDecksToPreferences()
+                    adapterDecks.notifyDataSetChanged() // RecyclerView'ı güncelle
+                    saveNewDeckToFile(deckName)  // Yeni desteyi JSON dosyasına kaydet
+                    saveDecksToPreferences() // SharedPreferences'a kaydet
                 }
                 dialogInterface.dismiss()
             }
@@ -88,45 +115,36 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-
+    // Örnek desteyi ilk açılışta yükleme
     private fun loadSampleDeckIfNeeded() {
         val sharedPreferences = getSharedPreferences("DecksPrefs", Context.MODE_PRIVATE)
 
         // Örnek desteyi yalnızca ilk kez çalıştırıldığında yükle
         if (!sharedPreferences.contains("deckList")) {
-            // Örnek desteyi assets klasöründen yükle
-            val inputStream = assets.open("sample_deck.json")
-            val reader = InputStreamReader(inputStream)
-            val sampleDeck = Gson().fromJson(reader, SampleDeck::class.java)
+            try {
+                // Örnek desteyi assets klasöründen yükle
+                val inputStream = assets.open("sample_deck.json")
+                val reader = InputStreamReader(inputStream)
+                val sampleDeck = Gson().fromJson(reader, SampleDeck::class.java)
 
-            // Desteyi SharedPreferences'a kaydet
-            val editor = sharedPreferences.edit()
-            val deckJson = Gson().toJson(listOf(sampleDeck.deckName))
-            val cardsJson = Gson().toJson(sampleDeck.cards)
-            editor.putString("deckList", deckJson)
-            editor.putString("unlearnedList", cardsJson)
-            editor.apply()
+                // Desteyi SharedPreferences'a kaydet
+                val editor = sharedPreferences.edit()
+                val deckJson = Gson().toJson(listOf(sampleDeck.deckName)) // Örnek deste adını kaydet
+                val cardsJson = Gson().toJson(sampleDeck.cards) // Örnek kartları kaydet
+                editor.putString("deckList", deckJson)
+                editor.putString("unlearnedList", cardsJson) // Kartları SharedPreferences'a kaydediyoruz
+                editor.apply()
+
+                reader.close() // InputStream'i kapatmayı unutmayın!
+
+                // Yeni eklenen desteyi listeye ekleyelim ve RecyclerView'u güncelleyelim
+                deckList.add(sampleDeck.deckName)
+                adapterDecks.notifyDataSetChanged()
+
+            } catch (e: Exception) {
+                e.printStackTrace() // Hata varsa log'ları kontrol edin
+            }
         }
-    }
-
-    private fun loadDecksFromPreferences() {
-        val sharedPreferences = getSharedPreferences("DecksPrefs", Context.MODE_PRIVATE)
-        val json = sharedPreferences.getString("deckList", null)
-
-        if (json != null) {
-            val type = object : com.google.gson.reflect.TypeToken<MutableList<String>>() {}.type
-            deckList = Gson().fromJson(json, type)
-        }
-    }
-
-    // SharedPreferences'a desteleri kaydet
-    private fun saveDecksToPreferences() {
-        val sharedPreferences = getSharedPreferences("DecksPrefs", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-
-        val json = Gson().toJson(deckList)
-        editor.putString("deckList", json)
-        editor.apply() // Veriyi kaydet
     }
 
     private fun saveNewDeckToFile(deckName: String) {
@@ -143,4 +161,12 @@ class MainActivity : AppCompatActivity() {
         file.writeText(json)
     }
 
+    private fun saveDecksToPreferences() {
+        val sharedPreferences = getSharedPreferences("DecksPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        val json = Gson().toJson(deckList)
+        editor.putString("deckList", json)
+        editor.apply() // Veriyi kaydet
+    }
 }
