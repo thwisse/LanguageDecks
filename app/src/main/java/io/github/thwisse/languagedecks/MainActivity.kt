@@ -1,5 +1,6 @@
 package io.github.thwisse.languagedecks
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.EditText
@@ -11,6 +12,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.github.thwisse.languagedecks.databinding.ActivityMainBinding
 import io.github.thwisse.languagedecks.databinding.DialogAddDeckBinding
 
@@ -19,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapterDecks: AdapterDecks
-    private var deckList = mutableListOf("Turkish - English")
+    private var deckList = mutableListOf<String>() // Boş liste, SharedPreferences'tan veri okuyacağız
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +44,9 @@ class MainActivity : AppCompatActivity() {
         recyclerView = binding.rvDecks
         recyclerView.layoutManager = LinearLayoutManager(this)
 
+        // SharedPreferences'tan desteleri oku
+        loadDecksFromPreferences()
+
         // Adapter'i oluştur ve RecyclerView'a bağla
         adapterDecks = AdapterDecks(deckList)
         recyclerView.adapter = adapterDecks
@@ -54,7 +60,7 @@ class MainActivity : AppCompatActivity() {
     // Yeni bir deste eklemek için dialog oluşturma
     private fun showAddDeckDialog() {
         // DialogAddDeckBinding ile dialog layout'unu bağla
-        val dialogBinding = DialogAddDeckBinding.inflate(LayoutInflater.from(this))
+        val dialogBinding = DialogAddDeckBinding.inflate(layoutInflater)
 
         // AlertDialog oluştur
         val dialog = AlertDialog.Builder(this)
@@ -63,10 +69,11 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("Add") { dialogInterface, _ ->
                 val deckName = dialogBinding.edtEnterDeckName.text.toString()
 
-                // Deste ismi boş değilse listeye ekle
+                // Deste ismi boş değilse listeye ve SharedPreferences'a ekle
                 if (deckName.isNotEmpty()) {
                     deckList.add(deckName)
                     adapterDecks.notifyDataSetChanged() // RecyclerView'ı güncelle
+                    saveDecksToPreferences() // SharedPreferences'a kaydet
                 }
                 dialogInterface.dismiss()
             }
@@ -76,5 +83,26 @@ class MainActivity : AppCompatActivity() {
             .create()
 
         dialog.show()
+    }
+
+    // SharedPreferences'tan desteleri yükle
+    private fun loadDecksFromPreferences() {
+        val sharedPreferences = getSharedPreferences("DecksPrefs", Context.MODE_PRIVATE)
+        val json = sharedPreferences.getString("deckList", null)
+
+        if (json != null) {
+            val type = object : TypeToken<MutableList<String>>() {}.type
+            deckList = Gson().fromJson(json, type)
+        }
+    }
+
+    // SharedPreferences'a desteleri kaydet
+    private fun saveDecksToPreferences() {
+        val sharedPreferences = getSharedPreferences("DecksPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        val json = Gson().toJson(deckList)
+        editor.putString("deckList", json)
+        editor.apply() // Veriyi kaydet
     }
 }

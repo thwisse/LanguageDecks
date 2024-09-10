@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="Unlearned"
+        android:id="@+id/unlearnedFragment"
+        android:icon="@drawable/icon_unlearned"/>
+
+    <item
+        android:title="Learned"
+        android:id="@+id/learnedFragment"
+        android:icon="@drawable/icon_learned"/>
+</menu>

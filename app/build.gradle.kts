@@ -58,4 +58,9 @@ dependencies {
     androidTestImplementation(libs.androidx.navigation.testing)
 
     implementation(libs.androidx.core.splashscreen)
+
+    implementation(libs.firebase.crashlytics.buildtools)
+
+    implementation("com.google.code.gson:gson:2.8.9")
+
 }
