@@ -1,0 +1,8 @@
+{
+  "deckName": "Sample Deck 1",
+  "cards": [
+    { "word": "Apple", "meaning": "Elma", "isLearned": false },
+    { "word": "Dog", "meaning": "Köpek", "isLearned": false },
+    { "word": "Car", "meaning": "Araba", "isLearned": true }
+  ]
+}

@@ -2,9 +2,6 @@ package io.github.thwisse.languagedecks
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.widget.EditText
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +13,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.github.thwisse.languagedecks.databinding.ActivityMainBinding
 import io.github.thwisse.languagedecks.databinding.DialogAddDeckBinding
+import java.io.File
+import java.io.InputStreamReader
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,11 +39,14 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // RecyclerView'ı bul ve layoutManager'ı ayarla
+        // RecyclerView ayarları
         recyclerView = binding.rvDecks
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // SharedPreferences'tan desteleri oku
+        // İlk kez çalıştırılıyorsa örnek deste yükle
+        loadSampleDeckIfNeeded()
+
+        // SharedPreferences'tan desteleri yükle
         loadDecksFromPreferences()
 
         // Adapter'i oluştur ve RecyclerView'a bağla
@@ -57,23 +59,24 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    // Yeni bir deste eklemek için dialog oluşturma
     private fun showAddDeckDialog() {
-        // DialogAddDeckBinding ile dialog layout'unu bağla
         val dialogBinding = DialogAddDeckBinding.inflate(layoutInflater)
 
-        // AlertDialog oluştur
         val dialog = AlertDialog.Builder(this)
             .setTitle("Add New Deck")
             .setView(dialogBinding.root)
             .setPositiveButton("Add") { dialogInterface, _ ->
                 val deckName = dialogBinding.edtEnterDeckName.text.toString()
 
-                // Deste ismi boş değilse listeye ve SharedPreferences'a ekle
                 if (deckName.isNotEmpty()) {
                     deckList.add(deckName)
-                    adapterDecks.notifyDataSetChanged() // RecyclerView'ı güncelle
-                    saveDecksToPreferences() // SharedPreferences'a kaydet
+                    adapterDecks.notifyDataSetChanged()
+
+                    // Yeni deste JSON dosyasına kaydedilsin
+                    saveNewDeckToFile(deckName)
+
+                    // SharedPreferences'a kaydet
+                    saveDecksToPreferences()
                 }
                 dialogInterface.dismiss()
             }
@@ -85,13 +88,33 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    // SharedPreferences'tan desteleri yükle
+
+    private fun loadSampleDeckIfNeeded() {
+        val sharedPreferences = getSharedPreferences("DecksPrefs", Context.MODE_PRIVATE)
+
+        // Örnek desteyi yalnızca ilk kez çalıştırıldığında yükle
+        if (!sharedPreferences.contains("deckList")) {
+            // Örnek desteyi assets klasöründen yükle
+            val inputStream = assets.open("sample_deck.json")
+            val reader = InputStreamReader(inputStream)
+            val sampleDeck = Gson().fromJson(reader, SampleDeck::class.java)
+
+            // Desteyi SharedPreferences'a kaydet
+            val editor = sharedPreferences.edit()
+            val deckJson = Gson().toJson(listOf(sampleDeck.deckName))
+            val cardsJson = Gson().toJson(sampleDeck.cards)
+            editor.putString("deckList", deckJson)
+            editor.putString("unlearnedList", cardsJson)
+            editor.apply()
+        }
+    }
+
     private fun loadDecksFromPreferences() {
         val sharedPreferences = getSharedPreferences("DecksPrefs", Context.MODE_PRIVATE)
         val json = sharedPreferences.getString("deckList", null)
 
         if (json != null) {
-            val type = object : TypeToken<MutableList<String>>() {}.type
+            val type = object : com.google.gson.reflect.TypeToken<MutableList<String>>() {}.type
             deckList = Gson().fromJson(json, type)
         }
     }
@@ -105,4 +128,19 @@ class MainActivity : AppCompatActivity() {
         editor.putString("deckList", json)
         editor.apply() // Veriyi kaydet
     }
+
+    private fun saveNewDeckToFile(deckName: String) {
+        // Yeni deste için JSON dosyası oluştur
+        val fileName = "$deckName.json"
+        val file = File(filesDir, fileName)
+
+        // Deste boş bir kart listesiyle başlatılacak
+        val cards = mutableListOf<SampleCard>() // Kartları boş başlatıyoruz
+        val deck = SampleDeck(deckName, cards)
+
+        // JSON'a çevir ve dosyaya yaz
+        val json = Gson().toJson(deck)
+        file.writeText(json)
+    }
+
 }
