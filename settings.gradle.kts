@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "LanguageDeck"
+rootProject.name = "LanguageDecks"
 include(":app")

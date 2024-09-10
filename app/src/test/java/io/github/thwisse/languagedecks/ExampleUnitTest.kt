@@ -1,4 +1,4 @@
-package io.github.thwisse.languagedeck
+package io.github.thwisse.languagedecks
 
 import org.junit.Test
 

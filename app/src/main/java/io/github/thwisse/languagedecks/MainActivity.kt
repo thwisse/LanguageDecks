@@ -1,4 +1,4 @@
-package io.github.thwisse.languagedeck
+package io.github.thwisse.languagedecks
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

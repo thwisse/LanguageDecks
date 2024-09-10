@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "io.github.thwisse.languagedeck"
+    namespace = "io.github.thwisse.languagedecks"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "io.github.thwisse.languagedeck"
+        applicationId = "io.github.thwisse.languagedecks"
         minSdk = 28
         targetSdk = 34
         versionCode = 1
