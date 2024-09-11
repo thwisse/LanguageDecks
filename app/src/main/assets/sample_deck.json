@@ -3,6 +3,8 @@
   "cards": [
     { "word": "Apple", "meaning": "Elma", "isLearned": false },
     { "word": "Dog", "meaning": "Köpek", "isLearned": false },
-    { "word": "Car", "meaning": "Araba", "isLearned": true }
+    { "word": "Car", "meaning": "Araba", "isLearned": true },
+    { "word": "Table", "meaning": "Masa", "isLearned": false },
+    { "word": "Phone", "meaning": "Telefon", "isLearned": true }
   ]
 }
