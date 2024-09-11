@@ -73,8 +73,6 @@ class MainActivity : AppCompatActivity() {
         editor.apply() // Veriyi kaydet
     }
 
-
-
     // Yeni bir deste eklemek için dialog oluşturma
     private fun showAddDeckDialog() {
         val dialogBinding = DialogAddDeckBinding.inflate(layoutInflater)

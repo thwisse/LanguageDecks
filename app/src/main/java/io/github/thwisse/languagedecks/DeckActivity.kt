@@ -1,11 +1,8 @@
 package io.github.thwisse.languagedecks
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.fragment.NavHostFragment
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.github.thwisse.languagedecks.databinding.ActivityDeckBinding
@@ -14,6 +11,8 @@ class DeckActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDeckBinding
     private var selectedDeck: String? = null  // Seçilen deste
+    private var unlearnedCards: List<SampleCard> = emptyList()
+    private var learnedCards: List<SampleCard> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +30,24 @@ class DeckActivity : AppCompatActivity() {
         if (cardsJson != null) {
             loadDeckCards(cardsJson)
         }
+
+        // Tab itemlarına tıklanınca fragment'ları gösterelim
+        binding.bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.unlearnedFragment -> {
+                    showUnlearnedFragment()
+                    true
+                }
+                R.id.learnedFragment -> {
+                    showLearnedFragment()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        // Varsayılan olarak Unlearned fragment'ı gösterelim
+        showUnlearnedFragment()
     }
 
     private fun loadDeckCards(cardsJson: String) {
@@ -38,33 +55,37 @@ class DeckActivity : AppCompatActivity() {
         val deckCards = Gson().fromJson<List<SampleCard>>(cardsJson, type)
 
         // Kartları ayır: unlearned ve learned
-        val unlearnedCards = deckCards.filter { !it.isLearned }
-        val learnedCards = deckCards.filter { it.isLearned }
+        unlearnedCards = deckCards.filter { !it.isLearned }
+        learnedCards = deckCards.filter { it.isLearned }
 
         Log.e("DeckActivity", "Unlearned Cards: ${unlearnedCards.size}, Learned Cards: ${learnedCards.size}")
-
-        // Bundle oluştur
-        val unlearnedBundle = Bundle().apply {
-            putString("unlearnedCards", Gson().toJson(unlearnedCards))
-        }
-
-        val learnedBundle = Bundle().apply {
-            putString("learnedCards", Gson().toJson(learnedCards))
-        }
-
-        // NavController'ı al
-        val navController = (supportFragmentManager.findFragmentById(R.id.navHostFragmentView) as NavHostFragment).navController
-
-        // İlk önce unlearnedFragment'a navigate et
-        navController.navigate(R.id.unlearnedFragment, unlearnedBundle)
-        Log.e("DeckActivity", "UnlearnedFragment'a yönlendirildi")
-
-        // 200ms delay ile learnedFragment'a geç
-        Handler(Looper.getMainLooper()).postDelayed({
-            navController.navigate(R.id.learnedFragment, learnedBundle)
-            Log.e("DeckActivity", "LearnedFragment'a yönlendirildi")
-        }, 200)
     }
 
+    private fun showUnlearnedFragment() {
+        val fragment = UnlearnedFragment()
+        val bundle = Bundle().apply {
+            putString("unlearnedCards", Gson().toJson(unlearnedCards))
+        }
+        fragment.arguments = bundle
 
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.navHostFragmentView, fragment)
+            .commit()
+
+        Log.e("DeckActivity", "UnlearnedFragment gösteriliyor")
+    }
+
+    private fun showLearnedFragment() {
+        val fragment = LearnedFragment()
+        val bundle = Bundle().apply {
+            putString("learnedCards", Gson().toJson(learnedCards))
+        }
+        fragment.arguments = bundle
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.navHostFragmentView, fragment)
+            .commit()
+
+        Log.e("DeckActivity", "LearnedFragment gösteriliyor")
+    }
 }

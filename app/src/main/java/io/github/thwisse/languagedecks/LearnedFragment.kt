@@ -34,14 +34,17 @@ class LearnedFragment : Fragment() {
         binding.rvLearned.layoutManager = LinearLayoutManager(context)
         binding.rvLearned.adapter = adapter
 
-        // Arguments kullanarak veriyi kontrol et
+        // Kartları arguments'tan alıp fragment'a yansıtmak için kontrol edelim
         val deckJson = arguments?.getString("learnedCards")
-        Log.e("LearnedFragment", "Learned Cards Json: $deckJson")  // Veriyi logla
-        if (deckJson != null) {
+        Log.e("LearnedFragment", "Learned Cards Json: $deckJson")
+
+        if (deckJson != null && deckJson != "null") {
             val type = object : TypeToken<List<SampleCard>>() {}.type
             learnedList = Gson().fromJson(deckJson, type)
-            adapter.updateData(learnedList)  // Adapter'i güncelle
+            adapter.updateData(learnedList)
             Log.e("LearnedFragment", "Learned Cards List: $learnedList")
+        } else {
+            Log.e("LearnedFragment", "Learned Cards Json is null or empty")
         }
     }
 
