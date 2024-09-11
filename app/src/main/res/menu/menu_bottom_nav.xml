@@ -5,10 +5,10 @@
     <item
         android:title="Unlearned"
         android:id="@+id/unlearnedFragment"
-        android:icon="@drawable/icon_unlearned"/>
+        android:icon="@drawable/ic_unlearned"/>
 
     <item
         android:title="Learned"
         android:id="@+id/learnedFragment"
-        android:icon="@drawable/icon_learned"/>
+        android:icon="@drawable/ic_learned"/>
 </menu>

@@ -89,6 +89,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun saveDecksToPreferences() {
+        val sharedPreferences = getSharedPreferences("DecksPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        val json = Gson().toJson(deckList)
+        editor.putString("deckList", json)
+        editor.apply() // Veriyi kaydet
+    }
+
     // Yeni bir deste eklemek için dialog oluşturma
     private fun showAddDeckDialog() {
         val dialogBinding = DialogAddDeckBinding.inflate(layoutInflater)
@@ -97,7 +106,7 @@ class MainActivity : AppCompatActivity() {
             .setTitle("Add New Deck")
             .setView(dialogBinding.root)
             .setPositiveButton("Add") { dialogInterface, _ ->
-                val deckName = dialogBinding.edtEnterDeckName.text.toString()
+                val deckName = dialogBinding.edtDeckName.text.toString()
 
                 if (deckName.isNotEmpty()) {
                     deckList.add(deckName)
@@ -159,14 +168,5 @@ class MainActivity : AppCompatActivity() {
         // JSON'a çevir ve dosyaya yaz
         val json = Gson().toJson(deck)
         file.writeText(json)
-    }
-
-    private fun saveDecksToPreferences() {
-        val sharedPreferences = getSharedPreferences("DecksPrefs", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-
-        val json = Gson().toJson(deckList)
-        editor.putString("deckList", json)
-        editor.apply() // Veriyi kaydet
     }
 }

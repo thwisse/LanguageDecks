@@ -7,9 +7,10 @@
     android:orientation="vertical">
 
     <EditText
-        android:id="@+id/edtEnterDeckName"
+        android:id="@+id/edtDeckName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter deck name" />
+        android:hint="Enter deck name"
+        android:minHeight="48dp" />
 
 </LinearLayout>

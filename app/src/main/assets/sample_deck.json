@@ -1,5 +1,5 @@
 {
-  "deckName": "Sample Deck 1",
+  "deckName": "English / Turkish",
   "cards": [
     { "word": "Apple", "meaning": "Elma", "isLearned": false },
     { "word": "Dog", "meaning": "Köpek", "isLearned": false },

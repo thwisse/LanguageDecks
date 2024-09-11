@@ -30,8 +30,8 @@ class LearnedFragment : Fragment() {
 
         // RecyclerView ayarları
         adapter = AdapterCards(learnedList)
-        binding.recyclerViewLearned.layoutManager = LinearLayoutManager(context)
-        binding.recyclerViewLearned.adapter = adapter
+        binding.rvLearned.layoutManager = LinearLayoutManager(context)
+        binding.rvLearned.adapter = adapter
 
         // Kartları DeckActivity'den alıp fragment'a yansıtmak için arguments kullanacağız
         val deckJson = arguments?.getString("learnedCards")

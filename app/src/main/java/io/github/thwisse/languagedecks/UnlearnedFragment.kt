@@ -30,8 +30,8 @@ class UnlearnedFragment : Fragment() {
 
         // RecyclerView ayarları
         adapter = AdapterCards(unlearnedList)
-        binding.recyclerViewUnlearned.layoutManager = LinearLayoutManager(context)
-        binding.recyclerViewUnlearned.adapter = adapter
+        binding.rvUnlearned.layoutManager = LinearLayoutManager(context)
+        binding.rvUnlearned.adapter = adapter
 
         // Kartları DeckActivity'den alıp fragment'a yansıtmak için arguments kullanacağız
         val deckJson = arguments?.getString("unlearnedCards")

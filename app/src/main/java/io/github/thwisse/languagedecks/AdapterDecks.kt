@@ -1,17 +1,17 @@
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import io.github.thwisse.languagedecks.databinding.LayoutItemRvBinding
+import io.github.thwisse.languagedecks.databinding.LayoutItemDeckRvBinding
 
 class AdapterDecks(
     private val deckList: List<String>,
     private val clickListener: (String) -> Unit  // Tıklama işlemi için listener
 ) : RecyclerView.Adapter<AdapterDecks.DeckViewHolder>() {
 
-    class DeckViewHolder(val binding: LayoutItemRvBinding) : RecyclerView.ViewHolder(binding.root)
+    class DeckViewHolder(val binding: LayoutItemDeckRvBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeckViewHolder {
-        val binding = LayoutItemRvBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = LayoutItemDeckRvBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return DeckViewHolder(binding)
     }
 
