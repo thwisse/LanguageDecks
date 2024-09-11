@@ -34,9 +34,9 @@ class LearnedFragment : Fragment() {
         binding.rvLearned.layoutManager = LinearLayoutManager(context)
         binding.rvLearned.adapter = adapter
 
-        // Kartları DeckActivity'den alıp fragment'a yansıtmak için arguments kullanacağız
+        // Arguments kullanarak veriyi kontrol et
         val deckJson = arguments?.getString("learnedCards")
-        Log.e("LearnedFragment", "Learned Cards Json: $deckJson")  // Verilerin gelip gelmediğini kontrol edin
+        Log.e("LearnedFragment", "Learned Cards Json: $deckJson")  // Veriyi logla
         if (deckJson != null) {
             val type = object : TypeToken<List<SampleCard>>() {}.type
             learnedList = Gson().fromJson(deckJson, type)

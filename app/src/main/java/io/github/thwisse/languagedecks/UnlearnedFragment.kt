@@ -39,16 +39,17 @@ class UnlearnedFragment : Fragment() {
         binding.rvUnlearned.layoutManager = LinearLayoutManager(context)
         binding.rvUnlearned.adapter = adapter
 
-        // SavedInstanceState kullanarak veriyi koruyalım
-        val deckJson = savedInstanceState?.getString("unlearnedCards") ?: arguments?.getString("unlearnedCards")
-        Log.e("UnlearnedFragment", "Unlearned Cards Json: $deckJson")
-        if (deckJson != null) {
+        // Kartları arguments'tan alıp fragment'a yansıtmak için kontrol edelim
+        val deckJson = arguments?.getString("unlearnedCards")
+        Log.e("UnlearnedFragment", "Unlearned Cards Json: $deckJson")  // Verilerin gelip gelmediğini kontrol edin
+
+        if (deckJson != null && deckJson != "null") {
             val type = object : TypeToken<List<SampleCard>>() {}.type
             unlearnedList = Gson().fromJson(deckJson, type)
             adapter.updateData(unlearnedList)  // Adapter'i güncelle
             Log.e("UnlearnedFragment", "Unlearned Cards List: $unlearnedList")
         } else {
-            Log.e("UnlearnedFragment", "Unlearned Cards Json is null")
+            Log.e("UnlearnedFragment", "Unlearned Cards Json is null or empty")
         }
     }
 

@@ -24,18 +24,16 @@ class DeckActivity : AppCompatActivity() {
         // MainActivity'den gelen deste ismini al
         selectedDeck = intent.getStringExtra("deckName")
 
-        // NavController'ı al
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.navHostFragmentView) as NavHostFragment
-
         // Kartları intent'ten al
         val cardsJson = intent.getStringExtra("cardsJson")
+        Log.e("DeckActivity", "Alınan kartlar: $cardsJson")  // Kartların gelip gelmediğini loglayalım
+
         if (cardsJson != null) {
-            loadDeckCards(navHostFragment, cardsJson)
+            loadDeckCards(cardsJson)
         }
     }
 
-    private fun loadDeckCards(navHostFragment: NavHostFragment, cardsJson: String) {
+    private fun loadDeckCards(cardsJson: String) {
         val type = object : TypeToken<List<SampleCard>>() {}.type
         val deckCards = Gson().fromJson<List<SampleCard>>(cardsJson, type)
 
@@ -45,20 +43,28 @@ class DeckActivity : AppCompatActivity() {
 
         Log.e("DeckActivity", "Unlearned Cards: ${unlearnedCards.size}, Learned Cards: ${learnedCards.size}")
 
-        val navController = navHostFragment.navController
-
-        // Sırasıyla navigate işlemi yap
+        // Bundle oluştur
         val unlearnedBundle = Bundle().apply {
             putString("unlearnedCards", Gson().toJson(unlearnedCards))
         }
-        navController.navigate(R.id.unlearnedFragment, unlearnedBundle)
 
-        // Delay ekleyerek learned fragment'a git
+        val learnedBundle = Bundle().apply {
+            putString("learnedCards", Gson().toJson(learnedCards))
+        }
+
+        // NavController'ı al
+        val navController = (supportFragmentManager.findFragmentById(R.id.navHostFragmentView) as NavHostFragment).navController
+
+        // İlk önce unlearnedFragment'a navigate et
+        navController.navigate(R.id.unlearnedFragment, unlearnedBundle)
+        Log.e("DeckActivity", "UnlearnedFragment'a yönlendirildi")
+
+        // 200ms delay ile learnedFragment'a geç
         Handler(Looper.getMainLooper()).postDelayed({
-            val learnedBundle = Bundle().apply {
-                putString("learnedCards", Gson().toJson(learnedCards))
-            }
             navController.navigate(R.id.learnedFragment, learnedBundle)
-        }, 100)
+            Log.e("DeckActivity", "LearnedFragment'a yönlendirildi")
+        }, 200)
     }
+
+
 }

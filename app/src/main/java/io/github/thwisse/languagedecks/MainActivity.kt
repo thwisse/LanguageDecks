@@ -4,6 +4,7 @@ import AdapterDecks
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -143,6 +144,9 @@ class MainActivity : AppCompatActivity() {
 
         // Kartları SharedPreferences'tan okuyalım
         val cards = loadDeckFromSharedPreferences(deckName)
+
+        // Aktarılan veriyi loglayalım
+        Log.e("MainActivity", "Gönderilen kartlar: ${Gson().toJson(cards)}")
 
         // Kartları JSON olarak intent ile gönder
         intent.putExtra("cardsJson", Gson().toJson(cards))
