@@ -1,6 +1,7 @@
 package io.github.thwisse.languagedecks
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,12 +36,15 @@ class LearnedFragment : Fragment() {
 
         // Kartları DeckActivity'den alıp fragment'a yansıtmak için arguments kullanacağız
         val deckJson = arguments?.getString("learnedCards")
+        Log.e("LearnedFragment", "Learned Cards Json: $deckJson")  // Verilerin gelip gelmediğini kontrol edin
         if (deckJson != null) {
-            val type = object : TypeToken<MutableList<SampleCard>>() {}.type
+            val type = object : TypeToken<List<SampleCard>>() {}.type
             learnedList = Gson().fromJson(deckJson, type)
             adapter.updateData(learnedList)  // Adapter'i güncelle
+            Log.e("LearnedFragment", "Learned Cards List: $learnedList")
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

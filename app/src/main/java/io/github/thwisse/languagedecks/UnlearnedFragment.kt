@@ -1,6 +1,7 @@
 package io.github.thwisse.languagedecks
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +26,11 @@ class UnlearnedFragment : Fragment() {
         return binding.root
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("unlearnedCards", Gson().toJson(unlearnedList))
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -33,14 +39,19 @@ class UnlearnedFragment : Fragment() {
         binding.rvUnlearned.layoutManager = LinearLayoutManager(context)
         binding.rvUnlearned.adapter = adapter
 
-        // Kartları DeckActivity'den alıp fragment'a yansıtmak için arguments kullanacağız
-        val deckJson = arguments?.getString("unlearnedCards")
+        // SavedInstanceState kullanarak veriyi koruyalım
+        val deckJson = savedInstanceState?.getString("unlearnedCards") ?: arguments?.getString("unlearnedCards")
+        Log.e("UnlearnedFragment", "Unlearned Cards Json: $deckJson")
         if (deckJson != null) {
-            val type = object : TypeToken<MutableList<SampleCard>>() {}.type
+            val type = object : TypeToken<List<SampleCard>>() {}.type
             unlearnedList = Gson().fromJson(deckJson, type)
             adapter.updateData(unlearnedList)  // Adapter'i güncelle
+            Log.e("UnlearnedFragment", "Unlearned Cards List: $unlearnedList")
+        } else {
+            Log.e("UnlearnedFragment", "Unlearned Cards Json is null")
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -1,5 +1,6 @@
 package io.github.thwisse.languagedecks
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +18,7 @@ class AdapterCards(private var cardList: List<SampleCard>) : RecyclerView.Adapte
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
         val card = cardList[position]
         holder.binding.itemTvCardWord.text = card.word
+        Log.e("AdapterCards", "Binding Card: ${card.word}")  // Hangi kartların gösterildiğini logla
     }
 
     override fun getItemCount(): Int {
@@ -27,5 +29,7 @@ class AdapterCards(private var cardList: List<SampleCard>) : RecyclerView.Adapte
     fun updateData(newCards: List<SampleCard>) {
         cardList = newCards
         notifyDataSetChanged()
+        Log.e("AdapterCards", "Updated with ${newCards.size} cards")  // Verilerin güncellendiğini logla
     }
 }
+
