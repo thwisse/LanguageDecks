@@ -8,15 +8,6 @@
     android:orientation="horizontal"
     android:gravity="center">
 
-    <ImageView
-        android:id="@+id/arrowLeft"
-        android:layout_width="36dp"
-        android:layout_gravity="center"
-        android:layout_height="36dp"
-        app:srcCompat="@drawable/ic_arrow_left" >
-
-    </ImageView>
-
     <TextView
         android:id="@+id/itemTvCardWord"
         android:layout_width="wrap_content"
@@ -26,14 +17,6 @@
         android:layout_margin="10sp"
         android:gravity="center">
     </TextView>
-
-    <ImageView
-        android:id="@+id/arrowRight"
-        android:layout_width="36dp"
-        android:layout_gravity="center"
-        android:layout_height="36dp"
-        app:srcCompat="@drawable/ic_arrow_right" >
-    </ImageView>
 
 
 </LinearLayout>

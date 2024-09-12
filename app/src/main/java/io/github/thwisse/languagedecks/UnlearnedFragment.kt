@@ -39,27 +39,8 @@ class UnlearnedFragment : Fragment() {
 
         // SharedPreferencesManager'ı başlatıyoruz
         sharedPreferencesManager = SharedPreferencesManager(requireContext())
-        loadDeckData()
 
-        Log.d("UnlearnedFragment KEKOD", "onCreateView() called, currentDeck: ${currentDeck.deckName}, Cards: ${currentDeck.cards.size}")
-
-        // Fragment'e gelen deste ismini alıyoruz
-        val deckName = requireActivity().intent.getStringExtra("deckName")
-        val deckList = sharedPreferencesManager.getDecks()
-        currentDeck = deckList.find { it.deckName == deckName } ?: Deck(deckName ?: "")
-
-        // Kart listesini önce temizleyelim, sonra yeniden dolduralım
-        cardList.clear()
-
-        // Sadece öğrenilmemiş kartları listele ve loglayalım
-        val unlearnedCards = currentDeck.cards.filter { !it.isLearned }
-//        for (card in unlearnedCards) {
-//            Log.d("UnlearnedFragment KEKOD", "Word: ${card.word}, isLearned: ${card.isLearned}")
-//        }
-
-        cardList.addAll(unlearnedCards)
-
-        // Kart adaptörünü başlatıyoruz
+        // Kart adaptörünü başlatıyoruz (Bunu loadDeckData() öncesinde yapıyoruz)
         cardAdapter = CardAdapter(cardList, { card ->
             Log.d("UnlearnedFragment KEKOD", "Clicked card: ${card.word}")
         }, { card ->
@@ -69,12 +50,30 @@ class UnlearnedFragment : Fragment() {
         binding.rvUnlearned.adapter = cardAdapter
         binding.rvUnlearned.layoutManager = LinearLayoutManager(context)
 
+        // Verileri yükle ve RecyclerView'i güncelle
+        loadDeckData()
+
         // Kart ekleme butonu
         binding.fabAddCard.setOnClickListener {
             showAddCardDialog()
         }
 
+        // Swipe-to-Refresh işlemi
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            shuffleCards() // Kartları karıştırma işlemi
+            binding.swipeRefreshLayout.isRefreshing = false // Swipe Refresh'i durdur
+        }
+
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            shuffleCards() // Kartları karıştırma işlemi
+            binding.swipeRefreshLayout.isRefreshing = false // Swipe Refresh'i durdur
+        }
     }
 
     override fun onResume() {
@@ -83,6 +82,27 @@ class UnlearnedFragment : Fragment() {
         loadDeckData()
         cardAdapter.notifyDataSetChanged()
     }
+
+    private fun shuffleCards() {
+        cardList.shuffle()
+
+        // Her karta benzersiz bir order değeri ata
+        val uniqueOrderSet = mutableSetOf<Int>()
+        cardList.forEachIndexed { index, card ->
+            var order = index + 1
+            while (uniqueOrderSet.contains(order)) {
+                order++ // Eğer order numarası kullanılmışsa bir sonrakine geç
+            }
+            card.order = order
+            uniqueOrderSet.add(order) // Order numarasını kaydet
+        }
+
+        updateDeckInList() // Hafızayı güncelle
+
+        cardAdapter.notifyDataSetChanged()
+    }
+
+
 
     private fun updateDeckInList() {
         val deckList = sharedPreferencesManager.getDecks()
@@ -96,17 +116,19 @@ class UnlearnedFragment : Fragment() {
         }
     }
 
-    private fun loadDeckData() {
+    fun loadDeckData() {
         val deckName = requireActivity().intent.getStringExtra("deckName")
         val deckList = sharedPreferencesManager.getDecks()
         currentDeck = deckList.find { it.deckName == deckName } ?: Deck(deckName ?: "")
 
-        Log.d("UnlearnedFragment KEKOD", "loadDeckData() - Current deck: ${currentDeck.deckName}, Cards: ${currentDeck.cards.size}")
-
         // Kart listesini önce temizleyelim, sonra yeniden dolduralım
         cardList.clear()
-        cardList.addAll(currentDeck.cards.filter { !it.isLearned })
+        cardList.addAll(currentDeck.cards.filter { !it.isLearned }.sortedBy { it.order }) // Order değerine göre sırala
+
+        // RecyclerView'den önce sıralama doğru yapılmalı
+        cardAdapter.notifyDataSetChanged()
     }
+
 
     private fun showAddCardDialog() {
         val builder = AlertDialog.Builder(requireContext())
@@ -121,16 +143,18 @@ class UnlearnedFragment : Fragment() {
             setTitle("Add New Card")
             setView(dialogLayout)
             setPositiveButton("Add") { dialog, which ->
+                // Kartı ekleyelim ve order değerini en sona atayalım
                 val newCard = Card(
                     word = etWord.text.toString(),
                     meaning1 = etMeaning1.text.toString(),
                     meaning2 = etMeaning2.text.toString(),
-                    isLearned = false // Yeni eklenen kart öğrenilmemiş olarak ekleniyor
+                    isLearned = false,
+                    order = cardList.size + 1 // Order numarası en son sıraya ekleniyor
                 )
-                currentDeck.cards.add(newCard) // Kartı currentDeck'e ekle
-                updateDeckInList() // Değişiklikleri hafızaya yaz
-                loadDeckData() // Verileri tekrar yükle
-                cardAdapter.notifyDataSetChanged() // RecyclerView'i güncelle
+                currentDeck.cards.add(newCard)
+                updateDeckInList() // Hafızayı güncelle
+                loadDeckData() // Verileri yeniden yükle
+                cardAdapter.notifyDataSetChanged() // RecyclerView güncelle
             }
             setNegativeButton("Cancel") { dialog, which -> }
             show()
@@ -142,6 +166,10 @@ class UnlearnedFragment : Fragment() {
         val popupMenu = PopupMenu(requireContext(), requireView())
         popupMenu.menuInflater.inflate(R.menu.menu_card_options, popupMenu.menu)
 
+        // UnlearnedFragment'ta Toggle Learned menüsü
+        val toggleMenuItem = popupMenu.menu.findItem(R.id.itemToggleLearned)
+        toggleMenuItem.title = "Toggle Learned"
+
         popupMenu.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.itemEdit -> {
@@ -152,11 +180,33 @@ class UnlearnedFragment : Fragment() {
                     showDeleteCardDialog(card)
                     true
                 }
+                R.id.itemToggleLearned -> {
+                    toggleLearnedState(card)
+                    true
+                }
                 else -> false
             }
         }
 
         popupMenu.show()
+    }
+
+    private fun toggleLearnedState(card: Card) {
+        card.isLearned = true  // Kart artık "learned" olacak
+
+        // Learned kartlar arasında sıralama sağlamak için en yüksek order'ı bul
+        val maxOrderInLearned = sharedPreferencesManager.getDecks()
+            .flatMap { it.cards }
+            .filter { it.isLearned }
+            .maxOfOrNull { it.order ?: 0 } ?: 0
+
+        // Kartı learned listesine eklerken en büyük order'ın bir fazlasını ata
+        card.order = maxOrderInLearned + 1
+        // Hafızadaki verileri güncelle
+        updateDeckInList()
+
+        // Verileri yeniden yükle ve RecyclerView'i güncelle
+        loadDeckData()
     }
 
     private fun showEditCardDialog(card: Card) {

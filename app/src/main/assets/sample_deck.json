@@ -2,6 +2,7 @@
   "deckName": "Sample Deck",
   "cards": [
     {
+      "order": 1,
       "image": null,
       "word": "Hello",
       "meaning1": "Merhaba",
@@ -9,6 +10,7 @@
       "isLearned": false
     },
     {
+      "order": 2,
       "image": null,
       "word": "Book",
       "meaning1": "Kitap",
@@ -16,6 +18,7 @@
       "isLearned": true
     },
     {
+      "order": 3,
       "image": null,
       "word": "Help",
       "meaning1": "Yardim",
@@ -23,6 +26,7 @@
       "isLearned": false
     },
     {
+      "order": 4,
       "image": null,
       "word": "Train",
       "meaning1": "Tren",
@@ -30,10 +34,35 @@
       "isLearned": false
     },
     {
+      "order": 5,
       "image": null,
-      "word": "Body",
-      "meaning1": "Beden",
-      "meaning2": "Almanca beden",
+      "word": "Paper",
+      "meaning1": "Kagit",
+      "meaning2": "Almanca kagit",
+      "isLearned": false
+    },
+    {
+      "order": 6,
+      "image": null,
+      "word": "Door",
+      "meaning1": "Kapi",
+      "meaning2": "Almanca kapi",
+      "isLearned": true
+    },
+    {
+      "order": 7,
+      "image": null,
+      "word": "Cat",
+      "meaning1": "Kedi",
+      "meaning2": "Almanca kedi",
+      "isLearned": false
+    },
+    {
+      "order": 8,
+      "image": null,
+      "word": "Moon",
+      "meaning1": "Ay",
+      "meaning2": "Almanca ay",
       "isLearned": true
     }
   ]

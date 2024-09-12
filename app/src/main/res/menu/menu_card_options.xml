@@ -6,4 +6,7 @@
     <item
         android:id="@+id/itemDelete"
         android:title="Delete" />
+    <item
+        android:id="@+id/itemToggleLearned"
+        android:title="Toggle Learned" />
 </menu>
