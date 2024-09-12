@@ -1,10 +1,19 @@
 {
-  "deckName": "English / Turkish",
+  "deckName": "Sample Deck",
   "cards": [
-    { "word": "Apple", "meaning": "Elma", "isLearned": false },
-    { "word": "Dog", "meaning": "Köpek", "isLearned": false },
-    { "word": "Car", "meaning": "Araba", "isLearned": true },
-    { "word": "Table", "meaning": "Masa", "isLearned": false },
-    { "word": "Phone", "meaning": "Telefon", "isLearned": true }
+    {
+      "image": null,
+      "word": "Hello",
+      "meaning1": "Merhaba",
+      "meaning2": "Hallo",
+      "isLearned": false
+    },
+    {
+      "image": null,
+      "word": "Book",
+      "meaning1": "Kitap",
+      "meaning2": "Buch",
+      "isLearned": false
+    }
   ]
 }

@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import io.github.thwisse.languagedecks.databinding.ActivityDeckBinding
 
 class DeckActivity : AppCompatActivity() {
@@ -26,7 +29,12 @@ class DeckActivity : AppCompatActivity() {
             insets
         }
 
-        // FragmentContainerView ve BottomNavigation ile ilgili diğer işlemler...
+        // NavController'ı NavHostFragment'tan alıyoruz
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFragmentView) as NavHostFragment
+        val navController = navHostFragment.navController
+
+        // BottomNavigationView ile NavController'ı ilişkilendiriyoruz
+        binding.bottomNavigationView.setupWithNavController(navController)
     }
 
     private fun enableEdgeToEdge() {

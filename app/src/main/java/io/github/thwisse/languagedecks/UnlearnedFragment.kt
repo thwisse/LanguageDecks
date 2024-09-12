@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -16,6 +18,8 @@ class UnlearnedFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var cardAdapter: CardAdapter
     private val cardList: MutableList<Card> = mutableListOf()
+    private lateinit var sharedPreferencesManager: SharedPreferencesManager
+    private lateinit var currentDeck: Deck // Şu anda işlem yapılan deste
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,23 +34,58 @@ class UnlearnedFragment : Fragment() {
             insets
         }
 
-        cardAdapter = CardAdapter(cardList) { card ->
-            // Tıklanan kart ile ilgili işlemleri burada yapacağız
+        // SharedPreferencesManager'ı başlatıyoruz
+        sharedPreferencesManager = SharedPreferencesManager(requireContext())
+
+        // Fragment'e gelen deste ismini alıyoruz
+        val deckName = requireActivity().intent.getStringExtra("deckName")
+        val deckList = sharedPreferencesManager.getDecks()
+        currentDeck = deckList.find { it.deckName == deckName } ?: Deck(deckName ?: "")
+
+        // Kart adaptörünü başlatıyoruz
+        cardAdapter = CardAdapter(currentDeck.cards) { card ->
+            // Kart tıklama işlemi
         }
 
         binding.rvUnlearned.adapter = cardAdapter
         binding.rvUnlearned.layoutManager = LinearLayoutManager(context)
 
-        loadCards()
+        // Kart ekleme butonu
+        binding.fabAddCard.setOnClickListener {
+            showAddCardDialog()
+        }
 
         return view
     }
 
-    private fun loadCards() {
-        // Sabit veri ekleyelim
-        cardList.add(Card("Dog", "Köpek", "Hund"))
-        cardList.add(Card("Cat", "Kedi", "Katze"))
-        cardAdapter.notifyDataSetChanged()
+    // Kart ekleme dialog'u
+    private fun showAddCardDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        val inflater = layoutInflater
+        val dialogLayout = inflater.inflate(R.layout.dialog_add_card, null)
+
+        val etWord = dialogLayout.findViewById<EditText>(R.id.edtWord)
+        val etMeaning1 = dialogLayout.findViewById<EditText>(R.id.edtMeaning1)
+        val etMeaning2 = dialogLayout.findViewById<EditText>(R.id.edtMeaning2)
+
+        with(builder) {
+            setTitle("Add New Card")
+            setView(dialogLayout)
+            setPositiveButton("Add") { dialog, which ->
+                val newCard = Card(
+                    word = etWord.text.toString(),
+                    meaning1 = etMeaning1.text.toString(),
+                    meaning2 = etMeaning2.text.toString()
+                )
+                currentDeck.cards.add(newCard)
+                cardAdapter.notifyDataSetChanged()
+                sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks()) // Desteleri güncelle
+            }
+            setNegativeButton("Cancel") { dialog, which ->
+                // İptal
+            }
+            show()
+        }
     }
 
     override fun onDestroyView() {

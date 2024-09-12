@@ -1,5 +1,6 @@
 package io.github.thwisse.languagedecks
 
+import android.content.Context
 import android.os.Bundle
 import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
@@ -8,7 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
 import io.github.thwisse.languagedecks.databinding.ActivityMainBinding
+import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,6 +41,15 @@ class MainActivity : AppCompatActivity() {
         // SharedPreferences'tan yüklenen deck listesi
         deckList.addAll(sharedPreferencesManager.getDecks())
 
+        // Eğer daha önce örnek deste eklenmemişse ekle
+        if (deckList.isEmpty()) {
+            val sampleDeck = loadSampleDeck(this)
+            sampleDeck?.let {
+                deckList.add(it)
+                sharedPreferencesManager.saveDecks(deckList)
+            }
+        }
+
         deckAdapter = DeckAdapter(deckList) { deck ->
             // Tıklanan deste ile ilgili işlemleri burada yapacağız
         }
@@ -58,18 +70,32 @@ class MainActivity : AppCompatActivity() {
         val editText = dialogLayout.findViewById<EditText>(R.id.edtDeckName)
 
         with(builder) {
-            setTitle("Yeni Deste Ekle")
+            setTitle("Create New Deck")
             setView(dialogLayout)
-            setPositiveButton("Ekle") { dialog, which ->
+            setPositiveButton("Create") { dialog, which ->
                 val newDeck = Deck(editText.text.toString())
                 deckList.add(newDeck)
                 deckAdapter.notifyDataSetChanged()
                 sharedPreferencesManager.saveDecks(deckList)
             }
-            setNegativeButton("İptal") { dialog, which ->
+            setNegativeButton("Cancel") { dialog, which ->
                 // İptal
             }
             show()
+        }
+    }
+
+    fun loadSampleDeck(context: Context): Deck? {
+        val jsonString: String
+        try {
+            jsonString = context.assets.open("sample_deck.json")
+                .bufferedReader()
+                .use { it.readText() }
+            val gson = Gson()
+            return gson.fromJson(jsonString, Deck::class.java)
+        } catch (ioException: IOException) {
+            ioException.printStackTrace()
+            return null
         }
     }
 }
