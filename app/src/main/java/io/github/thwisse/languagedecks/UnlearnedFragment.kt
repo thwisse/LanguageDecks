@@ -84,6 +84,18 @@ class UnlearnedFragment : Fragment() {
         cardAdapter.notifyDataSetChanged()
     }
 
+    private fun updateDeckInList() {
+        val deckList = sharedPreferencesManager.getDecks()
+        val deckIndex = deckList.indexOfFirst { it.deckName == currentDeck.deckName }
+        if (deckIndex != -1) {
+            deckList[deckIndex] = currentDeck // currentDeck'teki güncellemeleri tüm listeye aktar
+            sharedPreferencesManager.saveDecks(deckList)
+            Log.d("UnlearnedFragment KEKOD", "Deck updated in deckList and saved.")
+        } else {
+            Log.e("UnlearnedFragment KEKOD", "Error: Deck not found in deckList")
+        }
+    }
+
     private fun loadDeckData() {
         val deckName = requireActivity().intent.getStringExtra("deckName")
         val deckList = sharedPreferencesManager.getDecks()
@@ -113,20 +125,18 @@ class UnlearnedFragment : Fragment() {
                     word = etWord.text.toString(),
                     meaning1 = etMeaning1.text.toString(),
                     meaning2 = etMeaning2.text.toString(),
-                    isLearned = false
+                    isLearned = false // Yeni eklenen kart öğrenilmemiş olarak ekleniyor
                 )
-                currentDeck.cards.add(newCard)
-
-                Log.d("UnlearnedFragment KEKOD", "New card added: ${newCard.word}")
-
-                sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())
-                loadDeckData() // Verileri güncelle
-                cardAdapter.notifyDataSetChanged() // RecyclerView güncelle
+                currentDeck.cards.add(newCard) // Kartı currentDeck'e ekle
+                updateDeckInList() // Değişiklikleri hafızaya yaz
+                loadDeckData() // Verileri tekrar yükle
+                cardAdapter.notifyDataSetChanged() // RecyclerView'i güncelle
             }
             setNegativeButton("Cancel") { dialog, which -> }
             show()
         }
     }
+
 
     private fun showCardPopupMenu(card: Card) {
         val popupMenu = PopupMenu(requireContext(), requireView())
@@ -170,9 +180,8 @@ class UnlearnedFragment : Fragment() {
                 card.meaning1 = etMeaning1.text.toString()
                 card.meaning2 = etMeaning2.text.toString()
 
-                sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())
-                Log.d("UnlearnedFragment KEKOD", "Card updated: ${card.word}")
-                loadDeckData()
+                updateDeckInList() // Değişiklikleri hafızaya yaz
+                loadDeckData() // Verileri tekrar yükle
                 cardAdapter.notifyDataSetChanged()
             }
             setNegativeButton("Cancel") { dialog, which -> }
@@ -187,9 +196,8 @@ class UnlearnedFragment : Fragment() {
             setMessage("Are you sure?")
             setPositiveButton("Yes") { dialog, which ->
                 currentDeck.cards.remove(card)
-                sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())
-                Log.d("UnlearnedFragment KEKOD", "Card deleted: ${card.word}")
-                loadDeckData()
+                updateDeckInList() // Değişiklikleri hafızaya yaz
+                loadDeckData() // Verileri tekrar yükle
                 cardAdapter.notifyDataSetChanged()
             }
             setNegativeButton("Cancel") { dialog, which -> }

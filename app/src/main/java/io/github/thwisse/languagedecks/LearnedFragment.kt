@@ -77,6 +77,18 @@ class LearnedFragment : Fragment() {
         cardAdapter.notifyDataSetChanged()
     }
 
+    private fun updateDeckInList() {
+        val deckList = sharedPreferencesManager.getDecks()
+        val deckIndex = deckList.indexOfFirst { it.deckName == currentDeck.deckName }
+        if (deckIndex != -1) {
+            deckList[deckIndex] = currentDeck // currentDeck'teki güncellemeleri tüm listeye aktar
+            sharedPreferencesManager.saveDecks(deckList)
+            Log.d("LearnedFragment KEKOD", "Deck updated in deckList and saved.")
+        } else {
+            Log.e("LearnedFragment KEKOD", "Error: Deck not found in deckList")
+        }
+    }
+
     private fun loadDeckData() {
         val deckName = requireActivity().intent.getStringExtra("deckName")
         val deckList = sharedPreferencesManager.getDecks()
@@ -135,9 +147,8 @@ class LearnedFragment : Fragment() {
                 card.meaning1 = etMeaning1.text.toString()
                 card.meaning2 = etMeaning2.text.toString()
 
-                // Kartı güncelle ve kaydet
-                sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())
-                loadDeckData()
+                updateDeckInList() // Değişiklikleri hafızaya yaz
+                loadDeckData() // Verileri tekrar yükle
                 cardAdapter.notifyDataSetChanged()
             }
             setNegativeButton("Cancel") { dialog, which -> }
@@ -152,8 +163,8 @@ class LearnedFragment : Fragment() {
             setMessage("Are you sure?")
             setPositiveButton("Yes") { dialog, which ->
                 currentDeck.cards.remove(card)
-                sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())
-                loadDeckData()
+                updateDeckInList() // Değişiklikleri hafızaya yaz
+                loadDeckData() // Verileri tekrar yükle
                 cardAdapter.notifyDataSetChanged()
             }
             setNegativeButton("Cancel") { dialog, which -> }
