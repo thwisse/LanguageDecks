@@ -38,6 +38,7 @@ class LearnedFragment : Fragment() {
         }
 
         sharedPreferencesManager = SharedPreferencesManager(requireContext())
+        loadDeckData()
 
         val deckName = requireActivity().intent.getStringExtra("deckName")
         val deckList = sharedPreferencesManager.getDecks()
@@ -67,6 +68,23 @@ class LearnedFragment : Fragment() {
         binding.rvLearned.layoutManager = LinearLayoutManager(context)
 
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Fragment geri döndüğünde verileri tekrar yükle
+        loadDeckData()
+        cardAdapter.notifyDataSetChanged()
+    }
+
+    private fun loadDeckData() {
+        val deckName = requireActivity().intent.getStringExtra("deckName")
+        val deckList = sharedPreferencesManager.getDecks()
+        currentDeck = deckList.find { it.deckName == deckName } ?: Deck(deckName ?: "")
+
+        // Kart listesini önce temizleyelim, sonra yeniden dolduralım
+        cardList.clear()
+        cardList.addAll(currentDeck.cards.filter { it.isLearned })
     }
 
     private fun showCardPopupMenu(card: Card) {
@@ -117,7 +135,9 @@ class LearnedFragment : Fragment() {
                 card.meaning1 = etMeaning1.text.toString()
                 card.meaning2 = etMeaning2.text.toString()
 
+                // Kartı güncelle ve kaydet
                 sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())
+                loadDeckData()
                 cardAdapter.notifyDataSetChanged()
             }
             setNegativeButton("Cancel") { dialog, which -> }
@@ -133,15 +153,13 @@ class LearnedFragment : Fragment() {
             setPositiveButton("Yes") { dialog, which ->
                 currentDeck.cards.remove(card)
                 sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())
-                cardList.clear()
-                cardList.addAll(currentDeck.cards.filter { it.isLearned })
+                loadDeckData()
                 cardAdapter.notifyDataSetChanged()
             }
             setNegativeButton("Cancel") { dialog, which -> }
             show()
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

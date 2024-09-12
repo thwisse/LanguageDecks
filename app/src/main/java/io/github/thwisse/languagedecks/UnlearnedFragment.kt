@@ -39,6 +39,9 @@ class UnlearnedFragment : Fragment() {
 
         // SharedPreferencesManager'ı başlatıyoruz
         sharedPreferencesManager = SharedPreferencesManager(requireContext())
+        loadDeckData()
+
+        Log.d("UnlearnedFragment", "onCreateView() called, currentDeck: ${currentDeck.deckName}, Cards: ${currentDeck.cards.size}")
 
         // Fragment'e gelen deste ismini alıyoruz
         val deckName = requireActivity().intent.getStringExtra("deckName")
@@ -58,8 +61,8 @@ class UnlearnedFragment : Fragment() {
 
         // Kart adaptörünü başlatıyoruz
         cardAdapter = CardAdapter(cardList, { card ->
-            // Kart tıklama işlemi
-        }, { card -> // Sadece card parametresi alıyor
+            Log.d("UnlearnedFragment", "Clicked card: ${card.word}")
+        }, { card ->
             showCardPopupMenu(card)
         })
 
@@ -74,7 +77,25 @@ class UnlearnedFragment : Fragment() {
         return view
     }
 
-    // Kart ekleme dialog'u
+    override fun onResume() {
+        super.onResume()
+        // Fragment geri döndüğünde verileri tekrar yükle
+        loadDeckData()
+        cardAdapter.notifyDataSetChanged()
+    }
+
+    private fun loadDeckData() {
+        val deckName = requireActivity().intent.getStringExtra("deckName")
+        val deckList = sharedPreferencesManager.getDecks()
+        currentDeck = deckList.find { it.deckName == deckName } ?: Deck(deckName ?: "")
+
+        Log.d("UnlearnedFragment", "loadDeckData() - Current deck: ${currentDeck.deckName}, Cards: ${currentDeck.cards.size}")
+
+        // Kart listesini önce temizleyelim, sonra yeniden dolduralım
+        cardList.clear()
+        cardList.addAll(currentDeck.cards.filter { !it.isLearned })
+    }
+
     private fun showAddCardDialog() {
         val builder = AlertDialog.Builder(requireContext())
         val inflater = layoutInflater
@@ -92,26 +113,23 @@ class UnlearnedFragment : Fragment() {
                     word = etWord.text.toString(),
                     meaning1 = etMeaning1.text.toString(),
                     meaning2 = etMeaning2.text.toString(),
-                    isLearned = false // Yeni eklenen kart öğrenilmemiş olarak ekleniyor
+                    isLearned = false
                 )
                 currentDeck.cards.add(newCard)
 
-                // Kartı hafızaya kaydediyoruz
-                sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())
+                Log.d("UnlearnedFragment", "New card added: ${newCard.word}")
 
-                // RecyclerView'i güncelliyoruz
-                cardList.clear()
-                cardList.addAll(currentDeck.cards.filter { !it.isLearned })
-                cardAdapter.notifyDataSetChanged()
+                sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())
+                loadDeckData() // Verileri güncelle
+                cardAdapter.notifyDataSetChanged() // RecyclerView güncelle
             }
             setNegativeButton("Cancel") { dialog, which -> }
             show()
         }
     }
 
-    // Menü işlemleri
     private fun showCardPopupMenu(card: Card) {
-        val popupMenu = PopupMenu(requireContext(), requireView()) // 'requireView()' yerine uygun view verilebilir
+        val popupMenu = PopupMenu(requireContext(), requireView())
         popupMenu.menuInflater.inflate(R.menu.menu_card_options, popupMenu.menu)
 
         popupMenu.setOnMenuItemClickListener { menuItem ->
@@ -139,28 +157,22 @@ class UnlearnedFragment : Fragment() {
         val etWord = dialogLayout.findViewById<EditText>(R.id.edtEditWord)
         val etMeaning1 = dialogLayout.findViewById<EditText>(R.id.edtEditMeaning1)
         val etMeaning2 = dialogLayout.findViewById<EditText>(R.id.edtEditMeaning2)
-        val btnSelectImage = dialogLayout.findViewById<Button>(R.id.btnEditImage)
 
-        // Var olan kart verilerini doldur
         etWord.setText(card.word)
         etMeaning1.setText(card.meaning1)
         etMeaning2.setText(card.meaning2)
-
-        // Resim seçme butonuna tıklama işlemi (galeri açma)
-        btnSelectImage.setOnClickListener {
-            // Galeri açma işlemini buraya ekleyebilirsin
-        }
 
         with(builder) {
             setTitle("Edit Card")
             setView(dialogLayout)
             setPositiveButton("Save") { dialog, which ->
-                // Kartı düzenleyip güncelle
                 card.word = etWord.text.toString()
                 card.meaning1 = etMeaning1.text.toString()
                 card.meaning2 = etMeaning2.text.toString()
 
-                sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())
+                sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())\
+                Log.d("UnlearnedFragment", "Card updated: ${card.word}")
+                loadDeckData()
                 cardAdapter.notifyDataSetChanged()
             }
             setNegativeButton("Cancel") { dialog, which -> }
@@ -176,8 +188,8 @@ class UnlearnedFragment : Fragment() {
             setPositiveButton("Yes") { dialog, which ->
                 currentDeck.cards.remove(card)
                 sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())
-                cardList.clear()
-                cardList.addAll(currentDeck.cards.filter { !it.isLearned })
+                Log.d("UnlearnedFragment", "Card deleted: ${card.word}")
+                loadDeckData()
                 cardAdapter.notifyDataSetChanged()
             }
             setNegativeButton("Cancel") { dialog, which -> }

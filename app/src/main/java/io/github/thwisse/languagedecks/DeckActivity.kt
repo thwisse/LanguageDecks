@@ -57,7 +57,7 @@ class DeckActivity : AppCompatActivity() {
     }
 
     private fun logDeckCards(deck: Deck) {
-        Log.e("DeckActivity", "Deck: ${deck.deckName}")
+        Log.e("DeckActivity", "Deck: ${deck.deckName}, Card Count: ${deck.cards.size}")
         if (deck.cards.isEmpty()) {
             Log.e("DeckActivity", "This deck is empty.")
         } else {
