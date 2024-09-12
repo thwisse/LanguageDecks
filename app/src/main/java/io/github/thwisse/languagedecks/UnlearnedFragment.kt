@@ -41,7 +41,7 @@ class UnlearnedFragment : Fragment() {
         sharedPreferencesManager = SharedPreferencesManager(requireContext())
         loadDeckData()
 
-        Log.d("UnlearnedFragment", "onCreateView() called, currentDeck: ${currentDeck.deckName}, Cards: ${currentDeck.cards.size}")
+        Log.d("UnlearnedFragment KEKOD", "onCreateView() called, currentDeck: ${currentDeck.deckName}, Cards: ${currentDeck.cards.size}")
 
         // Fragment'e gelen deste ismini alıyoruz
         val deckName = requireActivity().intent.getStringExtra("deckName")
@@ -54,14 +54,14 @@ class UnlearnedFragment : Fragment() {
         // Sadece öğrenilmemiş kartları listele ve loglayalım
         val unlearnedCards = currentDeck.cards.filter { !it.isLearned }
 //        for (card in unlearnedCards) {
-//            Log.e("UnlearnedFragment", "Word: ${card.word}, isLearned: ${card.isLearned}")
+//            Log.d("UnlearnedFragment KEKOD", "Word: ${card.word}, isLearned: ${card.isLearned}")
 //        }
 
         cardList.addAll(unlearnedCards)
 
         // Kart adaptörünü başlatıyoruz
         cardAdapter = CardAdapter(cardList, { card ->
-            Log.d("UnlearnedFragment", "Clicked card: ${card.word}")
+            Log.d("UnlearnedFragment KEKOD", "Clicked card: ${card.word}")
         }, { card ->
             showCardPopupMenu(card)
         })
@@ -89,7 +89,7 @@ class UnlearnedFragment : Fragment() {
         val deckList = sharedPreferencesManager.getDecks()
         currentDeck = deckList.find { it.deckName == deckName } ?: Deck(deckName ?: "")
 
-        Log.d("UnlearnedFragment", "loadDeckData() - Current deck: ${currentDeck.deckName}, Cards: ${currentDeck.cards.size}")
+        Log.d("UnlearnedFragment KEKOD", "loadDeckData() - Current deck: ${currentDeck.deckName}, Cards: ${currentDeck.cards.size}")
 
         // Kart listesini önce temizleyelim, sonra yeniden dolduralım
         cardList.clear()
@@ -117,7 +117,7 @@ class UnlearnedFragment : Fragment() {
                 )
                 currentDeck.cards.add(newCard)
 
-                Log.d("UnlearnedFragment", "New card added: ${newCard.word}")
+                Log.d("UnlearnedFragment KEKOD", "New card added: ${newCard.word}")
 
                 sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())
                 loadDeckData() // Verileri güncelle
@@ -170,8 +170,8 @@ class UnlearnedFragment : Fragment() {
                 card.meaning1 = etMeaning1.text.toString()
                 card.meaning2 = etMeaning2.text.toString()
 
-                sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())\
-                Log.d("UnlearnedFragment", "Card updated: ${card.word}")
+                sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())
+                Log.d("UnlearnedFragment KEKOD", "Card updated: ${card.word}")
                 loadDeckData()
                 cardAdapter.notifyDataSetChanged()
             }
@@ -188,7 +188,7 @@ class UnlearnedFragment : Fragment() {
             setPositiveButton("Yes") { dialog, which ->
                 currentDeck.cards.remove(card)
                 sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())
-                Log.d("UnlearnedFragment", "Card deleted: ${card.word}")
+                Log.d("UnlearnedFragment KEKOD", "Card deleted: ${card.word}")
                 loadDeckData()
                 cardAdapter.notifyDataSetChanged()
             }

@@ -50,7 +50,7 @@ class LearnedFragment : Fragment() {
         // Sadece öğrenilmiş kartları listele ve loglayalım
         val learnedCards = currentDeck.cards.filter { it.isLearned }
 //        for (card in learnedCards) {
-//            Log.e("LearnedFragment", "Word: ${card.word}, isLearned: ${card.isLearned}")
+//            Log.d("LearnedFragment KEKOD", "Word: ${card.word}, isLearned: ${card.isLearned}")
 //        }
 
         cardList.addAll(learnedCards)
@@ -58,7 +58,7 @@ class LearnedFragment : Fragment() {
         // Kart adaptörünü başlatıyoruz
         cardAdapter = CardAdapter(cardList, { card ->
             // Kart tıklama işlemi
-            Log.d("LearnedFragment", "Clicked on: ${card.word}")
+            Log.d("LearnedFragment KEKOD", "Clicked on: ${card.word}")
         }, { card ->
             // Kart uzun basma işlemi
             showCardPopupMenu(card)

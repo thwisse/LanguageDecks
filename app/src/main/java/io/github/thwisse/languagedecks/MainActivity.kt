@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             sampleDeck?.let {
                 deckList.add(it)
                 sharedPreferencesManager.saveDecks(deckList)
-                Log.d("MainActivity", "Sample deck added: ${it.deckName}")
+                Log.d("MainActivity KEKOD", "Sample deck added: ${it.deckName}")
             }
         }
 
@@ -77,10 +77,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun logDeckInfo(deckList: List<Deck>) {
         if (deckList.isEmpty()) {
-            Log.e("MainActivity", "No decks found in SharedPreferences")
+            Log.d("MainActivity KEKOD", "No decks found in SharedPreferences")
         } else {
             for (deck in deckList) {
-                Log.e("MainActivity", "Deck: ${deck.deckName}, Card Count: ${deck.cards.size}")
+                Log.d("MainActivity KEKOD", "Deck: ${deck.deckName}, Card Count: ${deck.cards.size}")
             }
         }
     }

@@ -57,12 +57,12 @@ class DeckActivity : AppCompatActivity() {
     }
 
     private fun logDeckCards(deck: Deck) {
-        Log.e("DeckActivity", "Deck: ${deck.deckName}, Card Count: ${deck.cards.size}")
+        Log.d("DeckActivity KEKOD", "Deck: ${deck.deckName}, Card Count: ${deck.cards.size}")
         if (deck.cards.isEmpty()) {
-            Log.e("DeckActivity", "This deck is empty.")
+            Log.d("DeckActivity KEKOD", "This deck is empty.")
         } else {
             for (card in deck.cards) {
-                Log.e("DeckActivity", "Word: ${card.word}, isLearned: ${card.isLearned}")
+                Log.d("DeckActivity KEKOD", "Word: ${card.word}, isLearned: ${card.isLearned}")
             }
         }
     }

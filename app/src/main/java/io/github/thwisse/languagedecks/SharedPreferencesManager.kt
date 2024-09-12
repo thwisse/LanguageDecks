@@ -13,12 +13,12 @@ class SharedPreferencesManager(context: Context) {
 
     // Deck'leri kaydetme
     fun saveDecks(deckList: List<Deck>) {
-        Log.d("SharedPreferencesManager", "saveDecks() called with deckList size: ${deckList.size}")
+        Log.d("SharedPreferencesManager KEKOD", "saveDecks() called with deckList size: ${deckList.size}")
         val editor = sharedPreferences.edit()
         val json = gson.toJson(deckList)
         editor.putString("deck_list", json)
         editor.apply()
-        Log.d("SharedPreferencesManager", "saveDecks() successfully saved: $json")
+        Log.d("SharedPreferencesManager KEKOD", "saveDecks() successfully saved: $json")
     }
 
     // Deck'leri geri alma
@@ -26,10 +26,10 @@ class SharedPreferencesManager(context: Context) {
         val json = sharedPreferences.getString("deck_list", null)
         val type = object : TypeToken<List<Deck>>() {}.type
         return if (json != null) {
-            Log.d("SharedPreferencesManager", "getDecks() returned: $json")
+            Log.d("SharedPreferencesManager KEKOD", "getDecks() returned: $json")
             gson.fromJson(json, type)
         } else {
-            Log.e("SharedPreferencesManager", "getDecks() returned empty list")
+            Log.e("SharedPreferencesManager KEKOD", "getDecks() returned empty list")
             mutableListOf()
         }
     }
