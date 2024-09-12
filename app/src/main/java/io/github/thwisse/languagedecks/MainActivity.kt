@@ -3,6 +3,7 @@ package io.github.thwisse.languagedecks
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
@@ -53,6 +54,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Log kaydı oluşturma
+        logDeckInfo(deckList)
+
         deckAdapter = DeckAdapter(deckList, { deck ->
             val intent = Intent(this, DeckActivity::class.java)
             intent.putExtra("deckName", deck.deckName)
@@ -67,6 +71,16 @@ class MainActivity : AppCompatActivity() {
         // Yeni deste eklemek için bir dialog oluşturma
         binding.fabAddDeck.setOnClickListener {
             showAddDeckDialog()
+        }
+    }
+
+    private fun logDeckInfo(deckList: List<Deck>) {
+        if (deckList.isEmpty()) {
+            Log.e("MainActivity", "No decks found in SharedPreferences")
+        } else {
+            for (deck in deckList) {
+                Log.e("MainActivity", "Deck Name: ${deck.deckName}, Card Count: ${deck.cards.size}")
+            }
         }
     }
 

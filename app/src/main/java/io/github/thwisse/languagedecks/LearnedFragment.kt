@@ -5,6 +5,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -50,15 +54,94 @@ class LearnedFragment : Fragment() {
 
         cardList.addAll(learnedCards)
 
-        cardAdapter = CardAdapter(cardList) { card ->
+        // Kart adaptörünü başlatıyoruz
+        cardAdapter = CardAdapter(cardList, { card ->
             // Kart tıklama işlemi
-        }
+            Log.d("LearnedFragment", "Clicked on: ${card.word}")
+        }, { card ->
+            // Kart uzun basma işlemi
+            showCardPopupMenu(card)
+        })
 
         binding.rvLearned.adapter = cardAdapter
         binding.rvLearned.layoutManager = LinearLayoutManager(context)
 
         return view
     }
+
+    private fun showCardPopupMenu(card: Card) {
+        val popupMenu = PopupMenu(requireContext(), requireView())
+        popupMenu.menuInflater.inflate(R.menu.menu_card_options, popupMenu.menu)
+
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.itemEdit -> {
+                    showEditCardDialog(card)
+                    true
+                }
+                R.id.itemDelete -> {
+                    showDeleteCardDialog(card)
+                    true
+                }
+                else -> false
+            }
+        }
+
+        popupMenu.show()
+    }
+
+    private fun showEditCardDialog(card: Card) {
+        val builder = AlertDialog.Builder(requireContext())
+        val inflater = layoutInflater
+        val dialogLayout = inflater.inflate(R.layout.dialog_edit_card, null)
+
+        val etWord = dialogLayout.findViewById<EditText>(R.id.edtEditWord)
+        val etMeaning1 = dialogLayout.findViewById<EditText>(R.id.edtEditMeaning1)
+        val etMeaning2 = dialogLayout.findViewById<EditText>(R.id.edtEditMeaning2)
+        val btnSelectImage = dialogLayout.findViewById<Button>(R.id.btnEditImage)
+
+        // Var olan kart verilerini doldur
+        etWord.setText(card.word)
+        etMeaning1.setText(card.meaning1)
+        etMeaning2.setText(card.meaning2)
+
+        btnSelectImage.setOnClickListener {
+            // Galeri açma işlemi burada
+        }
+
+        with(builder) {
+            setTitle("Edit Card")
+            setView(dialogLayout)
+            setPositiveButton("Save") { dialog, which ->
+                card.word = etWord.text.toString()
+                card.meaning1 = etMeaning1.text.toString()
+                card.meaning2 = etMeaning2.text.toString()
+
+                sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())
+                cardAdapter.notifyDataSetChanged()
+            }
+            setNegativeButton("Cancel") { dialog, which -> }
+            show()
+        }
+    }
+
+    private fun showDeleteCardDialog(card: Card) {
+        val builder = AlertDialog.Builder(requireContext())
+        with(builder) {
+            setTitle("Delete Card")
+            setMessage("Are you sure?")
+            setPositiveButton("Yes") { dialog, which ->
+                currentDeck.cards.remove(card)
+                sharedPreferencesManager.saveDecks(sharedPreferencesManager.getDecks())
+                cardList.clear()
+                cardList.addAll(currentDeck.cards.filter { it.isLearned })
+                cardAdapter.notifyDataSetChanged()
+            }
+            setNegativeButton("Cancel") { dialog, which -> }
+            show()
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

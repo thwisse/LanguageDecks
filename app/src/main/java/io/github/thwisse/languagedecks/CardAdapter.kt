@@ -7,7 +7,8 @@ import io.github.thwisse.languagedecks.databinding.LayoutItemCardRvBinding
 
 class CardAdapter(
     private val cardList: List<Card>,
-    private val onItemClick: (Card) -> Unit
+    private val onItemClick: (Card) -> Unit,
+    private val onLongClick: (Card) -> Unit // Sadece Card alacak
 ) : RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
 
     inner class CardViewHolder(val binding: LayoutItemCardRvBinding) : RecyclerView.ViewHolder(binding.root)
@@ -20,8 +21,15 @@ class CardAdapter(
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
         val card = cardList[position]
         holder.binding.itemTvCardWord.text = card.word
+
         holder.binding.root.setOnClickListener {
             onItemClick(card)
+        }
+
+        // Uzun basıldığında kartı parametre olarak gönderiyoruz
+        holder.binding.root.setOnLongClickListener {
+            onLongClick(card)
+            true
         }
     }
 
