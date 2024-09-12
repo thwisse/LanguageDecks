@@ -1,14 +1,14 @@
 package io.github.thwisse.languagedecks
 
 data class Deck(
-    val deckName: String,
+    var deckName: String,
     val cards: MutableList<Card> = mutableListOf()
 )
 
 data class Card(
-    val word: String,
-    val meaning1: String,
-    val meaning2: String,
-    val image: String? = null, // Base64 olarak resim saklanacak
+    var word: String,
+    var meaning1: String,
+    var meaning2: String,
+    var image: String? = null, // Base64 olarak resim saklanacak
     var isLearned: Boolean = false
 )

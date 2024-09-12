@@ -48,9 +48,9 @@ class UnlearnedFragment : Fragment() {
 
         // Sadece öğrenilmemiş kartları listele ve loglayalım
         val unlearnedCards = currentDeck.cards.filter { !it.isLearned }
-        for (card in unlearnedCards) {
-            Log.e("UnlearnedFragment", "Word: ${card.word}, isLearned: ${card.isLearned}")
-        }
+//        for (card in unlearnedCards) {
+//            Log.e("UnlearnedFragment", "Word: ${card.word}, isLearned: ${card.isLearned}")
+//        }
 
         cardList.addAll(unlearnedCards)
 
