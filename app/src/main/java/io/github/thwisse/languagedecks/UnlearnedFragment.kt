@@ -1,6 +1,7 @@
 package io.github.thwisse.languagedecks
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,8 +43,19 @@ class UnlearnedFragment : Fragment() {
         val deckList = sharedPreferencesManager.getDecks()
         currentDeck = deckList.find { it.deckName == deckName } ?: Deck(deckName ?: "")
 
+        // Kart listesini önce temizleyelim, sonra yeniden dolduralım
+        cardList.clear()
+
+        // Sadece öğrenilmemiş kartları listele ve loglayalım
+        val unlearnedCards = currentDeck.cards.filter { !it.isLearned }
+        for (card in unlearnedCards) {
+            Log.e("UnlearnedFragment", "Word: ${card.word}, isLearned: ${card.isLearned}")
+        }
+
+        cardList.addAll(unlearnedCards)
+
         // Kart adaptörünü başlatıyoruz
-        cardAdapter = CardAdapter(currentDeck.cards) { card ->
+        cardAdapter = CardAdapter(cardList) { card ->
             // Kart tıklama işlemi
         }
 

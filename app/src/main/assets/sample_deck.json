@@ -13,7 +13,28 @@
       "word": "Book",
       "meaning1": "Kitap",
       "meaning2": "Buch",
+      "isLearned": true
+    },
+    {
+      "image": null,
+      "word": "Help",
+      "meaning1": "Yardim",
+      "meaning2": "Almanca yardim",
       "isLearned": false
+    },
+    {
+      "image": null,
+      "word": "Train",
+      "meaning1": "Tren",
+      "meaning2": "Almanca tren",
+      "isLearned": false
+    },
+    {
+      "image": null,
+      "word": "Body",
+      "meaning1": "Beden",
+      "meaning2": "Almanca beden",
+      "isLearned": true
     }
   ]
 }

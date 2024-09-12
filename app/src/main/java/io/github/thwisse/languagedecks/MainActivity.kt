@@ -1,6 +1,7 @@
 package io.github.thwisse.languagedecks
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
@@ -51,8 +52,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         deckAdapter = DeckAdapter(deckList) { deck ->
-            // Tıklanan deste ile ilgili işlemleri burada yapacağız
+            val intent = Intent(this, DeckActivity::class.java)
+            intent.putExtra("deckName", deck.deckName)
+            startActivity(intent)
         }
+
 
         binding.rvDecks.adapter = deckAdapter
         binding.rvDecks.layoutManager = LinearLayoutManager(this)
