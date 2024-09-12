@@ -1,56 +1,52 @@
 package io.github.thwisse.languagedecks
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import io.github.thwisse.languagedecks.databinding.FragmentUnlearnedBinding
 
 class UnlearnedFragment : Fragment() {
 
     private var _binding: FragmentUnlearnedBinding? = null
     private val binding get() = _binding!!
-    private lateinit var adapter: AdapterCards
-    private var unlearnedList = mutableListOf<SampleCard>()  // Unlearned kartlar burada tutulacak
+    private lateinit var cardAdapter: CardAdapter
+    private val cardList: MutableList<Card> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         _binding = FragmentUnlearnedBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+        val view = binding.root
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString("unlearnedCards", Gson().toJson(unlearnedList))
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // RecyclerView ayarları
-        adapter = AdapterCards(unlearnedList)
-        binding.rvUnlearned.layoutManager = LinearLayoutManager(context)
-        binding.rvUnlearned.adapter = adapter
-
-        // Kartları arguments'tan alıp fragment'a yansıtmak için kontrol edelim
-        val deckJson = arguments?.getString("unlearnedCards")
-        Log.e("UnlearnedFragment", "Unlearned Cards Json: $deckJson")
-
-        if (deckJson != null && deckJson != "null") {
-            val type = object : TypeToken<List<SampleCard>>() {}.type
-            unlearnedList = Gson().fromJson(deckJson, type)
-            adapter.updateData(unlearnedList)
-            Log.e("UnlearnedFragment", "Unlearned Cards List: $unlearnedList")
-        } else {
-            Log.e("UnlearnedFragment", "Unlearned Cards Json is null or empty")
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
         }
+
+        cardAdapter = CardAdapter(cardList) { card ->
+            // Tıklanan kart ile ilgili işlemleri burada yapacağız
+        }
+
+        binding.rvUnlearned.adapter = cardAdapter
+        binding.rvUnlearned.layoutManager = LinearLayoutManager(context)
+
+        loadCards()
+
+        return view
+    }
+
+    private fun loadCards() {
+        // Sabit veri ekleyelim
+        cardList.add(Card("Dog", "Köpek", "Hund"))
+        cardList.add(Card("Cat", "Kedi", "Katze"))
+        cardAdapter.notifyDataSetChanged()
     }
 
     override fun onDestroyView() {
