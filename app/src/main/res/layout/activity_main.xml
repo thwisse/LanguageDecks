@@ -12,6 +12,7 @@
         android:id="@+id/rvDecks"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/materialToolbar"
         tools:layout_editor_absoluteX="1dp" />
@@ -33,10 +34,8 @@
         android:id="@+id/materialToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:background="@color/material_dynamic_neutral70"
-        android:minHeight="?attr/actionBarSize"
-        app:title="Language Decks"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="1dp" />
+        app:title="Language Decks"
+        app:titleCentered="true"
+        app:titleTextAppearance="@style/TextAppearance.AppCompat.Display1" />
 </androidx.constraintlayout.widget.ConstraintLayout>
