@@ -66,7 +66,7 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
 
     override fun onResume() {
         super.onResume()
-        Log.d("LearnedFragment KEKOD", "onResume called - Deck data is being loaded.")
+//        Log.d("LearnedFragment KEKOD", "onResume called - Deck data is being loaded.")
         loadDeckData()
         cardAdapter.notifyDataSetChanged()
     }
@@ -223,7 +223,7 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
         // Verileri güncelleyip RecyclerView'i yenileme
         loadDeckData()
         cardAdapter.notifyDataSetChanged()
-        Log.d("LearnedFragment", "Card durumu değişti, veri yenilendi.")
+//        Log.d("LearnedFragment", "Card durumu değişti, veri yenilendi.")
     }
 
 }

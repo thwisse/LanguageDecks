@@ -48,7 +48,7 @@ class CardDetailDialogFragment : DialogFragment() {
         binding.btnIslearningChanger.setOnClickListener {
             toggleLearnedState(currentCard)
             sharedPreferencesManager.saveDecks(deckList)
-            Log.d("CardDetailDialogFragment KEKOD", "Card state changed and dialog dismissed.")
+//            Log.d("CardDetailDialogFragment KEKOD", "Card state changed and dialog dismissed.")
             dismiss() // Dialog'u kapat
             updateFragmentData() // Fragment'ta verileri güncelle
         }
@@ -88,7 +88,7 @@ class CardDetailDialogFragment : DialogFragment() {
             parentFragment.onCardStateChanged()
         }
 
-        Log.d("CardDetailDialogFragment", "Parent fragment güncellemesi tamamlandı.")
+//        Log.d("CardDetailDialogFragment", "Parent fragment güncellemesi tamamlandı.")
     }
 
 
