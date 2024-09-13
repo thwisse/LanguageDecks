@@ -16,11 +16,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.thwisse.languagedecks.databinding.FragmentLearnedBinding
 
-class LearnedFragment : Fragment() {
+class LearnedFragment : Fragment(), CardStateChangeListener {
 
     private var _binding: FragmentLearnedBinding? = null
     private val binding get() = _binding!!
-    private lateinit var cardAdapter: CardAdapter
+    lateinit var cardAdapter: CardAdapter
     private val cardList: MutableList<Card> = mutableListOf()
     private lateinit var sharedPreferencesManager: SharedPreferencesManager
     private lateinit var currentDeck: Deck
@@ -42,16 +42,19 @@ class LearnedFragment : Fragment() {
 
         cardAdapter = CardAdapter(cardList, { card ->
             // Kart tıklandığında yapılacaklar
-            val bundle = Bundle().apply {
+            val dialogFragment = CardDetailDialogFragment()
+            dialogFragment.setTargetFragment(this, 0) // targetFragment ayarlandı
+            dialogFragment.arguments = Bundle().apply {
                 putString("word", card.word)
                 putString("meaning1", card.meaning1)
                 putString("meaning2", card.meaning2)
             }
-            findNavController().navigate(R.id.cardDetailDialogFragment, bundle)
+            dialogFragment.show(parentFragmentManager, "CardDetailDialogFragment")
         }, { card ->
             // Kart uzun basıldığında yapılacaklar
             showCardPopupMenu(card)
         })
+
 
         binding.rvLearned.adapter = cardAdapter
         binding.rvLearned.layoutManager = LinearLayoutManager(context)
@@ -63,10 +66,17 @@ class LearnedFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        // Fragment geri döndüğünde verileri tekrar yükle
+        Log.d("LearnedFragment KEKOD", "onResume called - Deck data is being loaded.")
         loadDeckData()
         cardAdapter.notifyDataSetChanged()
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        loadDeckData()  // Deck verilerini yükle
+        cardAdapter.notifyDataSetChanged()  // Adapter'ı güncelle
+    }
+
 
     private fun updateDeckInList() {
         val deckList = sharedPreferencesManager.getDecks()
@@ -74,13 +84,13 @@ class LearnedFragment : Fragment() {
         if (deckIndex != -1) {
             deckList[deckIndex] = currentDeck // currentDeck'teki güncellemeleri tüm listeye aktar
             sharedPreferencesManager.saveDecks(deckList)
-            Log.d("LearnedFragment KEKOD", "Deck updated in deckList and saved.")
+//            Log.d("LearnedFragment KEKOD", "Deck updated in deckList and saved.")
         } else {
-            Log.e("LearnedFragment KEKOD", "Error: Deck not found in deckList")
+//            Log.e("LearnedFragment KEKOD", "Error: Deck not found in deckList")
         }
     }
 
-    private fun loadDeckData() {
+    fun loadDeckData() {
         val deckName = requireActivity().intent.getStringExtra("deckName")
         val deckList = sharedPreferencesManager.getDecks()
         currentDeck = deckList.find { it.deckName == deckName } ?: Deck(deckName ?: "")
@@ -208,4 +218,12 @@ class LearnedFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    override fun onCardStateChanged() {
+        // Verileri güncelleyip RecyclerView'i yenileme
+        loadDeckData()
+        cardAdapter.notifyDataSetChanged()
+        Log.d("LearnedFragment", "Card durumu değişti, veri yenilendi.")
+    }
+
 }

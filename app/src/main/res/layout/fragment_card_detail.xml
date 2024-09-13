@@ -28,4 +28,11 @@
         android:text="Meaning 2"
         android:paddingTop="8dp" />
 
+    <Button
+        android:id="@+id/btnIslearningChanger"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Toggle Learned" />
+
+
 </LinearLayout>

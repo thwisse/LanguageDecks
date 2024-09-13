@@ -16,11 +16,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.thwisse.languagedecks.databinding.FragmentUnlearnedBinding
 
-class UnlearnedFragment : Fragment() {
+class UnlearnedFragment : Fragment(), CardStateChangeListener {
 
     private var _binding: FragmentUnlearnedBinding? = null
     private val binding get() = _binding!!
-    private lateinit var cardAdapter: CardAdapter
+    lateinit var cardAdapter: CardAdapter
     private val cardList: MutableList<Card> = mutableListOf()
     private lateinit var sharedPreferencesManager: SharedPreferencesManager
     private lateinit var currentDeck: Deck // Şu anda işlem yapılan deste
@@ -43,12 +43,14 @@ class UnlearnedFragment : Fragment() {
 
         cardAdapter = CardAdapter(cardList, { card ->
             // Kart tıklandığında yapılacaklar
-            val bundle = Bundle().apply {
+            val dialogFragment = CardDetailDialogFragment()
+            dialogFragment.setTargetFragment(this, 0)
+            dialogFragment.arguments = Bundle().apply {
                 putString("word", card.word)
                 putString("meaning1", card.meaning1)
                 putString("meaning2", card.meaning2)
             }
-            findNavController().navigate(R.id.cardDetailDialogFragment, bundle)
+            dialogFragment.show(parentFragmentManager, "CardDetailDialogFragment")
         }, { card ->
             // Kart uzun basıldığında yapılacaklar
             showCardPopupMenu(card)
@@ -81,14 +83,18 @@ class UnlearnedFragment : Fragment() {
             shuffleCards() // Kartları karıştırma işlemi
             binding.swipeRefreshLayout.isRefreshing = false // Swipe Refresh'i durdur
         }
+
+        loadDeckData()  // Deck verilerini yükle
+        cardAdapter.notifyDataSetChanged()  // Adapter'ı güncelle
     }
 
     override fun onResume() {
         super.onResume()
-        // Fragment geri döndüğünde verileri tekrar yükle
+        Log.d("UnlearnedFragment KEKOD", "onResume called - Deck data is being loaded.")
         loadDeckData()
         cardAdapter.notifyDataSetChanged()
     }
+
 
     private fun shuffleCards() {
         cardList.shuffle()
@@ -117,9 +123,9 @@ class UnlearnedFragment : Fragment() {
         if (deckIndex != -1) {
             deckList[deckIndex] = currentDeck // currentDeck'teki güncellemeleri tüm listeye aktar
             sharedPreferencesManager.saveDecks(deckList)
-            Log.d("UnlearnedFragment KEKOD", "Deck updated in deckList and saved.")
+//            Log.d("UnlearnedFragment KEKOD", "Deck updated in deckList and saved.")
         } else {
-            Log.e("UnlearnedFragment KEKOD", "Error: Deck not found in deckList")
+//            Log.e("UnlearnedFragment KEKOD", "Error: Deck not found in deckList")
         }
     }
 
@@ -266,4 +272,13 @@ class UnlearnedFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    override fun onCardStateChanged() {
+        // Verileri güncelleyip RecyclerView'i yenileme
+        loadDeckData()
+        cardAdapter.notifyDataSetChanged()
+        Log.d("UnlearnedFragment", "Card durumu değişti, veri yenilendi.")
+    }
+
+
 }
