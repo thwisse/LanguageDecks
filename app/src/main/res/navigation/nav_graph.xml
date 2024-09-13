@@ -15,4 +15,10 @@
         android:name="io.github.thwisse.languagedecks.LearnedFragment"
         android:label="fragment_learned"
         tools:layout="@layout/fragment_learned" />
+    <dialog
+        android:id="@+id/cardDetailDialogFragment"
+        android:name="io.github.thwisse.languagedecks.CardDetailDialogFragment"
+        android:label="fragment_card_detail"
+        tools:layout="@layout/fragment_card_detail" />
+
 </navigation>

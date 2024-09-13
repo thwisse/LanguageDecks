@@ -12,6 +12,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.thwisse.languagedecks.databinding.FragmentLearnedBinding
 
@@ -27,7 +28,7 @@ class LearnedFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentLearnedBinding.inflate(inflater, container, false)
         val view = binding.root
 
@@ -39,12 +40,16 @@ class LearnedFragment : Fragment() {
 
         sharedPreferencesManager = SharedPreferencesManager(requireContext())
 
-        // Kart adaptörünü başlatıyoruz
         cardAdapter = CardAdapter(cardList, { card ->
-            // Kart tıklama işlemi
-            Log.d("LearnedFragment KEKOD", "Clicked on: ${card.word}")
+            // Kart tıklandığında yapılacaklar
+            val bundle = Bundle().apply {
+                putString("word", card.word)
+                putString("meaning1", card.meaning1)
+                putString("meaning2", card.meaning2)
+            }
+            findNavController().navigate(R.id.cardDetailDialogFragment, bundle)
         }, { card ->
-            // Kart uzun basma işlemi
+            // Kart uzun basıldığında yapılacaklar
             showCardPopupMenu(card)
         })
 
