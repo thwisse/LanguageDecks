@@ -1,6 +1,8 @@
 package io.github.thwisse.languagedecks
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -53,6 +55,15 @@ class CardDetailDialogFragment : DialogFragment() {
             updateFragmentData() // Fragment'ta verileri güncelle
         }
 
+        // Resmi göstermek
+        if (currentCard.image != null) {
+            val decodedByte = Base64.decode(currentCard.image, Base64.DEFAULT)
+            val bitmap = BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.size)
+            binding.imgViewCardImage.setImageBitmap(bitmap)
+            binding.imgViewCardImage.visibility = View.VISIBLE
+        } else {
+            binding.imgViewCardImage.visibility = View.GONE // Resim yoksa gizle
+        }
     }
 
     private fun updateToggleButton() {
