@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- styles.xml -->
+<resources>
+    <!-- Splash Screen Theme -->
+    <style name="SplashTheme" parent="Theme.SplashScreen.IconBackground">
+        <!-- Splash Screen arka plan rengi -->
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <!-- Splash Screen logosu -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+        <!-- Logo animasyonu süresi (ms cinsinden) -->
+        <item name="windowSplashScreenAnimationDuration">5000</item>
+        <!-- Animasyon sonrası uygulama logosunun yerleşimi -->
+        <item name="postSplashScreenTheme">@style/Theme.LanguageDecks</item> <!-- Uygulamanızın teması -->
+    </style>
+</resources>
