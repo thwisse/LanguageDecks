@@ -1,4 +1,7 @@
-### Project Title: **Language Decks**
+***Language Decks***
+
+<img src="assets/logo.png"  width="100"/>
+
 
 ---
 
