@@ -172,6 +172,12 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         val deckList = sharedPreferencesManager.getDecks()
         currentDeck = deckList.find { it.deckName == deckName } ?: Deck(deckName ?: "")
 
+        // Eğer resimler henüz atanmadıysa bu fonksiyonu çalıştırıyoruz
+        if (!sharedPreferencesManager.isImagesAssigned()) {
+            assignImagesToCards()
+            sharedPreferencesManager.setImagesAssigned(true) // Resimlerin atandığını kaydediyoruz
+        }
+
         // Kart listesini temizleyip tekrar yükleyelim
         cardList.clear()
         cardList.addAll(currentDeck.cards.filter { !it.isLearned }.sortedBy { it.order })
@@ -382,5 +388,26 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         loadDeckData()
         cardAdapter.notifyDataSetChanged()
 //        Log.d("UnlearnedFragment", "Card durumu değişti, veri yenilendi.")
+    }
+
+    private fun assignImagesToCards() {
+        // Örnek olarak 50 tane resim ve kartı eşleştiriyoruz
+        for ((index, card) in currentDeck.cards.withIndex()) {
+            // Resim ismini oluşturun (örneğin image1.png, image2.png ...)
+            val imageName = "image${index + 1}" // Eğer resim dosyalarının adı bu formatta ise
+            val resourceId = resources.getIdentifier(imageName, "drawable", requireContext().packageName)
+
+            if (resourceId != 0) {
+                // Bitmap'e çeviriyoruz
+                val bitmap = BitmapFactory.decodeResource(resources, resourceId)
+                card.image = bitmapToBase64(bitmap)
+            } else {
+                Log.e("UnlearnedFragment", "Image not found for card: ${card.word}")
+            }
+        }
+
+        // Kartlara resimleri ekledikten sonra SharedPreferences'i güncelleyelim
+        updateDeckInList()
+        Log.d("UnlearnedFragment", "Images assigned to cards and saved.")
     }
 }

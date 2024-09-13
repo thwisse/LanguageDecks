@@ -8,5 +8,6 @@
         android:title="Delete" />
     <item
         android:id="@+id/itemToggleLearned"
-        android:title="Toggle Learned" />
+        android:title="Toggle Learned"
+        android:visible="false"/>
 </menu>

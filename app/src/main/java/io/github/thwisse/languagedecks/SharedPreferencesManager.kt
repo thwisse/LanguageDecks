@@ -11,6 +11,13 @@ class SharedPreferencesManager(context: Context) {
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("DecksData", Context.MODE_PRIVATE)
     private val gson = Gson()
 
+    private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+    companion object {
+        private const val PREFS_NAME = "language_decks_prefs"
+        private const val IMAGES_ASSIGNED_KEY = "images_assigned"
+    }
+
     // Deck'leri kaydetme
     fun saveDecks(deckList: List<Deck>) {
 //        Log.d("SharedPreferencesManager KEKOD", "saveDecks() called with deckList size: ${deckList.size}")
@@ -32,6 +39,26 @@ class SharedPreferencesManager(context: Context) {
 //            Log.e("SharedPreferencesManager KEKOD", "getDecks() returned empty list")
             mutableListOf()
         }
+    }
+
+    // Boolean değeri kaydetme
+    fun putBoolean(key: String, value: Boolean) {
+        prefs.edit().putBoolean(key, value).apply()
+    }
+
+    // Boolean değeri okuma
+    fun getBoolean(key: String, defaultValue: Boolean = false): Boolean {
+        return prefs.getBoolean(key, defaultValue)
+    }
+
+    // Resimlerin atanıp atanmadığını kontrol eden özel fonksiyon
+    fun isImagesAssigned(): Boolean {
+        return getBoolean(IMAGES_ASSIGNED_KEY)
+    }
+
+    // Resimlerin atandığını kaydeden fonksiyon
+    fun setImagesAssigned(isAssigned: Boolean) {
+        putBoolean(IMAGES_ASSIGNED_KEY, isAssigned)
     }
 }
 

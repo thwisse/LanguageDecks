@@ -51,9 +51,12 @@ class MainActivity : AppCompatActivity() {
             sampleDeck?.let {
                 deckList.add(it)
                 sharedPreferencesManager.saveDecks(deckList)
-//                Log.d("MainActivity KEKOD", "Sample deck added: ${it.deckName}")
+
+                // Resimlerin henüz atanmadığını belirtiyoruz
+                sharedPreferencesManager.setImagesAssigned(false)
             }
         }
+
 
         // Log kaydı oluşturma
         logDeckInfo(deckList)
