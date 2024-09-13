@@ -1,12 +1,20 @@
 package io.github.thwisse.languagedecks
 
+import android.app.Activity
+import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.ViewCompat
@@ -15,6 +23,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.thwisse.languagedecks.databinding.FragmentUnlearnedBinding
+import java.io.ByteArrayOutputStream
 
 class UnlearnedFragment : Fragment(), CardStateChangeListener {
 
@@ -24,6 +33,13 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
     private val cardList: MutableList<Card> = mutableListOf()
     private lateinit var sharedPreferencesManager: SharedPreferencesManager
     private lateinit var currentDeck: Deck // Şu anda işlem yapılan deste
+    private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
+    private var selectedBitmap: Bitmap? = null // Seçilen resmi tutacak değişken
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -95,6 +111,13 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         cardAdapter.notifyDataSetChanged()
     }
 
+    private fun bitmapToBase64(bitmap: Bitmap): String {
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+        val byteArray = byteArrayOutputStream.toByteArray()
+        return Base64.encodeToString(byteArray, Base64.DEFAULT)
+    }
+
 
     private fun shuffleCards() {
         cardList.shuffle()
@@ -151,19 +174,50 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         val etWord = dialogLayout.findViewById<EditText>(R.id.edtWord)
         val etMeaning1 = dialogLayout.findViewById<EditText>(R.id.edtMeaning1)
         val etMeaning2 = dialogLayout.findViewById<EditText>(R.id.edtMeaning2)
+        val btnSelectImage = dialogLayout.findViewById<Button>(R.id.btnSelectImage)
+        val imageViewPreview = dialogLayout.findViewById<ImageView>(R.id.imageViewPreview)
+
+        var selectedBitmap: Bitmap? = null // Seçilen resmi tutacak
+
+        btnSelectImage.setOnClickListener {
+            val intentToGallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            activityResultLauncher.launch(intentToGallery)
+        }
+
+        // activityResultLauncher işlemi buraya taşınıyor:
+        activityResultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+                val imageUri = result.data?.data
+                selectedBitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, imageUri)
+
+                Log.d("UnlearnedFragment", "Selected Bitmap: $selectedBitmap")
+
+                // Seçilen resmi önizleme yapmak için
+                if (selectedBitmap != null) {
+                    imageViewPreview.setImageBitmap(selectedBitmap)
+                    imageViewPreview.visibility = View.VISIBLE
+                }
+            }
+        }
 
         with(builder) {
             setTitle("Add New Card")
             setView(dialogLayout)
             setPositiveButton("Add") { dialog, which ->
-                // Kartı ekleyelim ve order değerini en sona atayalım
                 val newCard = Card(
                     word = etWord.text.toString(),
                     meaning1 = etMeaning1.text.toString(),
                     meaning2 = etMeaning2.text.toString(),
+                    image = selectedBitmap?.let { bitmapToBase64(it) }, // Resmi Base64'e çevir
                     isLearned = false,
-                    order = cardList.size + 1 // Order numarası en son sıraya ekleniyor
+                    order = cardList.size + 1
                 )
+
+                Log.d("UnlearnedFragment", "Image as Base64: ${bitmapToBase64(selectedBitmap!!)}")
+
+
                 currentDeck.cards.add(newCard)
                 updateDeckInList() // Hafızayı güncelle
                 loadDeckData() // Verileri yeniden yükle
@@ -173,6 +227,8 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
             show()
         }
     }
+
+
 
 
     private fun showCardPopupMenu(card: Card) {

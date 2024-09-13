@@ -1,6 +1,8 @@
 package io.github.thwisse.languagedecks
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -48,10 +50,20 @@ class CardDetailDialogFragment : DialogFragment() {
         binding.btnIslearningChanger.setOnClickListener {
             toggleLearnedState(currentCard)
             sharedPreferencesManager.saveDecks(deckList)
-            Log.d("CardDetailDialogFragment KEKOD", "Card state changed and dialog dismissed.")
+//            Log.d("CardDetailDialogFragment KEKOD", "Card state changed and dialog dismissed.")
             dismiss() // Dialog'u kapat
             updateFragmentData() // Fragment'ta verileri güncelle
         }
+
+        if (currentCard.image != null) {
+            Log.d("CardDetailDialogFragment", "Decoded Image ByteArray: ${currentCard.image}")
+            val decodedByte = Base64.decode(currentCard.image, Base64.DEFAULT)
+            val bitmap = BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.size)
+            binding.imgViCardImage.setImageBitmap(bitmap)
+        } else {
+            binding.imgViCardImage.visibility = View.GONE // Resim yoksa gizle
+        }
+
 
     }
 
@@ -88,7 +100,7 @@ class CardDetailDialogFragment : DialogFragment() {
             parentFragment.onCardStateChanged()
         }
 
-        Log.d("CardDetailDialogFragment", "Parent fragment güncellemesi tamamlandı.")
+//        Log.d("CardDetailDialogFragment", "Parent fragment güncellemesi tamamlandı.")
     }
 
 
