@@ -1,69 +1,405 @@
 {
-  "deckName": "Sample Deck",
+  "deckName": "C2 TUR - ENG & GER",
   "cards": [
     {
       "order": 1,
       "image": null,
-      "word": "Hello",
-      "meaning1": "Merhaba",
-      "meaning2": "Hallo",
+      "word": "muhtemelen",
+      "meaning1": "presumably",
+      "meaning2": "vermutlich",
       "isLearned": false
     },
     {
       "order": 2,
       "image": null,
-      "word": "Book",
-      "meaning1": "Kitap",
-      "meaning2": "Buch",
-      "isLearned": true
+      "word": "yetersiz",
+      "meaning1": "insufficient",
+      "meaning2": "unzureichend",
+      "isLearned": false
     },
     {
       "order": 3,
       "image": null,
-      "word": "Help",
-      "meaning1": "Yardim",
-      "meaning2": "Almanca yardim",
+      "word": "fazladan",
+      "meaning1": "superfluous",
+      "meaning2": "überflüssig",
       "isLearned": false
     },
     {
       "order": 4,
       "image": null,
-      "word": "Train",
-      "meaning1": "Tren",
-      "meaning2": "Almanca tren",
+      "word": "belirsizlik",
+      "meaning1": "ambiguity",
+      "meaning2": "mehrdeutigkeit",
       "isLearned": false
     },
     {
       "order": 5,
       "image": null,
-      "word": "Paper",
-      "meaning1": "Kagit",
-      "meaning2": "Almanca kagit",
+      "word": "tutarsızlık",
+      "meaning1": "inconsistency",
+      "meaning2": "unstimmigkeit",
       "isLearned": false
     },
     {
       "order": 6,
       "image": null,
-      "word": "Door",
-      "meaning1": "Kapi",
-      "meaning2": "Almanca kapi",
-      "isLearned": true
+      "word": "önyargı",
+      "meaning1": "prejudice",
+      "meaning2": "vorurteil",
+      "isLearned": false
     },
     {
       "order": 7,
       "image": null,
-      "word": "Cat",
-      "meaning1": "Kedi",
-      "meaning2": "Almanca kedi",
+      "word": "kapsamlı",
+      "meaning1": "comprehensive",
+      "meaning2": "umfassend",
       "isLearned": false
     },
     {
       "order": 8,
       "image": null,
-      "word": "Moon",
-      "meaning1": "Ay",
-      "meaning2": "Almanca ay",
-      "isLearned": true
+      "word": "reddedilemez",
+      "meaning1": "irrefutable",
+      "meaning2": "unbestreitbar",
+      "isLearned": false
+    },
+    {
+      "order": 9,
+      "image": null,
+      "word": "vasıfsız",
+      "meaning1": "unqualified",
+      "meaning2": "unqualifiziert",
+      "isLearned": false
+    },
+    {
+      "order": 10,
+      "image": null,
+      "word": "yorumsuz",
+      "meaning1": "inexpressible",
+      "meaning2": "unaussprechlich",
+      "isLearned": false
+    },
+    {
+      "order": 11,
+      "image": null,
+      "word": "sürükleyici",
+      "meaning1": "engrossing",
+      "meaning2": "fesselnd",
+      "isLearned": false
+    },
+    {
+      "order": 12,
+      "image": null,
+      "word": "esnek",
+      "meaning1": "flexible",
+      "meaning2": "flexibel",
+      "isLearned": false
+    },
+    {
+      "order": 13,
+      "image": null,
+      "word": "görev",
+      "meaning1": "mandate",
+      "meaning2": "mandat",
+      "isLearned": false
+    },
+    {
+      "order": 14,
+      "image": null,
+      "word": "i̇kna edici",
+      "meaning1": "compelling",
+      "meaning2": "überzeugend",
+      "isLearned": false
+    },
+    {
+      "order": 15,
+      "image": null,
+      "word": "varlıklı",
+      "meaning1": "affluent",
+      "meaning2": "wohlhabend",
+      "isLearned": false
+    },
+    {
+      "order": 16,
+      "image": null,
+      "word": "yetersizlik",
+      "meaning1": "deficiency",
+      "meaning2": "mangel",
+      "isLearned": false
+    },
+    {
+      "order": 17,
+      "image": null,
+      "word": "sürdürülebilir",
+      "meaning1": "sustainable",
+      "meaning2": "nachhaltig",
+      "isLearned": false
+    },
+    {
+      "order": 18,
+      "image": null,
+      "word": "gizlilik",
+      "meaning1": "confidentiality",
+      "meaning2": "vertraulichkeit",
+      "isLearned": false
+    },
+    {
+      "order": 19,
+      "image": null,
+      "word": "etik",
+      "meaning1": "ethical",
+      "meaning2": "ethisch",
+      "isLearned": false
+    },
+    {
+      "order": 20,
+      "image": null,
+      "word": "adil",
+      "meaning1": "equitable",
+      "meaning2": "gerecht",
+      "isLearned": false
+    },
+    {
+      "order": 21,
+      "image": null,
+      "word": "bağışıklık",
+      "meaning1": "immunity",
+      "meaning2": "immunität",
+      "isLearned": false
+    },
+    {
+      "order": 22,
+      "image": null,
+      "word": "çarpıcı",
+      "meaning1": "striking",
+      "meaning2": "auffallend",
+      "isLearned": false
+    },
+    {
+      "order": 23,
+      "image": null,
+      "word": "miras",
+      "meaning1": "heritage",
+      "meaning2": "erbe",
+      "isLearned": false
+    },
+    {
+      "order": 24,
+      "image": null,
+      "word": "bilgi",
+      "meaning1": "cognition",
+      "meaning2": "erkenntnis",
+      "isLearned": false
+    },
+    {
+      "order": 25,
+      "image": null,
+      "word": "süreç",
+      "meaning1": "procedure",
+      "meaning2": "verfahren",
+      "isLearned": false
+    },
+    {
+      "order": 26,
+      "image": null,
+      "word": "özveri",
+      "meaning1": "dedication",
+      "meaning2": "hingabe",
+      "isLearned": false
+    },
+    {
+      "order": 27,
+      "image": null,
+      "word": "yararlı",
+      "meaning1": "beneficial",
+      "meaning2": "vorteilhaft",
+      "isLearned": false
+    },
+    {
+      "order": 28,
+      "image": null,
+      "word": "karmaşık",
+      "meaning1": "intricate",
+      "meaning2": "komplex",
+      "isLearned": false
+    },
+    {
+      "order": 29,
+      "image": null,
+      "word": "zorlayıcı",
+      "meaning1": "demanding",
+      "meaning2": "anspruchsvoll",
+      "isLearned": false
+    },
+    {
+      "order": 30,
+      "image": null,
+      "word": "yatırım",
+      "meaning1": "investment",
+      "meaning2": "investition",
+      "isLearned": false
+    },
+    {
+      "order": 31,
+      "image": null,
+      "word": "bağış",
+      "meaning1": "donation",
+      "meaning2": "spende",
+      "isLearned": false
+    },
+    {
+      "order": 32,
+      "image": null,
+      "word": "hayırsever",
+      "meaning1": "philanthropic",
+      "meaning2": "wohltätig",
+      "isLearned": false
+    },
+    {
+      "order": 33,
+      "image": null,
+      "word": "bilinç",
+      "meaning1": "awareness",
+      "meaning2": "bewusstsein",
+      "isLearned": false
+    },
+    {
+      "order": 34,
+      "image": null,
+      "word": "i̇şbirliği",
+      "meaning1": "collaboration",
+      "meaning2": "zusammenarbeit",
+      "isLearned": false
+    },
+    {
+      "order": 35,
+      "image": null,
+      "word": "esneklik",
+      "meaning1": "resilience",
+      "meaning2": "widerstandsfähigkeit",
+      "isLearned": false
+    },
+    {
+      "order": 36,
+      "image": null,
+      "word": "tutku",
+      "meaning1": "passion",
+      "meaning2": "leidenschaft",
+      "isLearned": false
+    },
+    {
+      "order": 37,
+      "image": null,
+      "word": "katılım",
+      "meaning1": "engagement",
+      "meaning2": "engagement",
+      "isLearned": false
+    },
+    {
+      "order": 38,
+      "image": null,
+      "word": "olgunluk",
+      "meaning1": "maturity",
+      "meaning2": "reife",
+      "isLearned": false
+    },
+    {
+      "order": 39,
+      "image": null,
+      "word": "i̇stikrar",
+      "meaning1": "stability",
+      "meaning2": "stabilität",
+      "isLearned": false
+    },
+    {
+      "order": 40,
+      "image": null,
+      "word": "devrim",
+      "meaning1": "revolution",
+      "meaning2": "revolution",
+      "isLearned": false
+    },
+    {
+      "order": 41,
+      "image": null,
+      "word": "güvenlik",
+      "meaning1": "security",
+      "meaning2": "sicherheit",
+      "isLearned": false
+    },
+    {
+      "order": 42,
+      "image": null,
+      "word": "zamanlama",
+      "meaning1": "timing",
+      "meaning2": "zeitpunkt",
+      "isLearned": false
+    },
+    {
+      "order": 43,
+      "image": null,
+      "word": "tahmin",
+      "meaning1": "prediction",
+      "meaning2": "vorhersage",
+      "isLearned": false
+    },
+    {
+      "order": 44,
+      "image": null,
+      "word": "girişim",
+      "meaning1": "initiative",
+      "meaning2": "initiative",
+      "isLearned": false
+    },
+    {
+      "order": 45,
+      "image": null,
+      "word": "özlem",
+      "meaning1": "yearning",
+      "meaning2": "sehnsucht",
+      "isLearned": false
+    },
+    {
+      "order": 46,
+      "image": null,
+      "word": "tedarik",
+      "meaning1": "supply",
+      "meaning2": "versorgung",
+      "isLearned": false
+    },
+    {
+      "order": 47,
+      "image": null,
+      "word": "fırsat",
+      "meaning1": "opportunity",
+      "meaning2": "gelegenheit",
+      "isLearned": false
+    },
+    {
+      "order": 48,
+      "image": null,
+      "word": "koordinasyon",
+      "meaning1": "coordination",
+      "meaning2": "koordination",
+      "isLearned": false
+    },
+    {
+      "order": 49,
+      "image": null,
+      "word": "özgün",
+      "meaning1": "original",
+      "meaning2": "originell",
+      "isLearned": false
+    },
+    {
+      "order": 50,
+      "image": null,
+      "word": "yanlış anlaşılma",
+      "meaning1": "misunderstanding",
+      "meaning2": "missverständnis",
+      "isLearned": false
     }
   ]
 }

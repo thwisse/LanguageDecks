@@ -8,34 +8,15 @@ android:layout_height="wrap_content"
 android:orientation="horizontal"
 android:gravity="center">
 
-<ImageView
-    android:id="@+id/arrowLeft"
-    android:layout_width="36dp"
-    android:layout_gravity="center"
-    android:layout_height="36dp"
-    app:srcCompat="@drawable/ic_arrow_left" >
-
-</ImageView>
-
-<TextView
+    <TextView
     android:id="@+id/itemTvDeckName"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:text="Deck Name"
     android:textSize="24sp"
     android:layout_margin="10sp"
-    android:paddingHorizontal="70dp"
     android:gravity="center">
 </TextView>
-
-<ImageView
-    android:id="@+id/arrowRight"
-    android:layout_width="36dp"
-    android:layout_gravity="center"
-    android:layout_height="36dp"
-    android:visibility="invisible"
-    app:srcCompat="@drawable/ic_arrow_right" >
-</ImageView>
 
 
 </LinearLayout>

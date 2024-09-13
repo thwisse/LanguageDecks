@@ -5,22 +5,23 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
     android:gravity="center"
-    android:padding="16dp">
+    android:padding="32dp">
 
     <TextView
         android:id="@+id/textViewWord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Word"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:padding="5dp"/>
 
     <TextView
         android:id="@+id/textViewMeaning1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Meaning 1"
+        android:padding="5dp"
         android:paddingTop="8dp" />
 
     <TextView
@@ -28,18 +29,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Meaning 2"
-        android:paddingTop="8dp" />
+        android:padding="5dp" />
 
     <Button
         android:id="@+id/btnIslearningChanger"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Toggle Learned" />
+        android:text="Toggle Learned"
+        android:layout_margin="5dp"
+        android:textSize="15sp"/>
 
     <ImageView
         android:id="@+id/imgViewCardImage"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"/>
 
 
 </LinearLayout>
