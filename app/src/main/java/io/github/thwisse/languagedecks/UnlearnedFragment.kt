@@ -21,7 +21,6 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.thwisse.languagedecks.databinding.FragmentUnlearnedBinding
 import java.io.ByteArrayOutputStream
@@ -33,7 +32,7 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
     lateinit var cardAdapter: CardAdapter
     private val cardList: MutableList<Card> = mutableListOf()
     private lateinit var sharedPreferencesManager: SharedPreferencesManager
-    private lateinit var currentDeck: Deck // Şu anda işlem yapılan deste
+    private lateinit var currentDeck: Deck
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
     private var selectedBitmap: Bitmap? = null
     private var selectedImageView: ImageView? = null
@@ -47,12 +46,10 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
             if (result.resultCode == Activity.RESULT_OK && result.data != null) {
                 val imageUri = result.data?.data
                 selectedBitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, imageUri)
-                // Eğer dialog açıkken resim seçilmişse imgViewPreview'e yansıt
                 selectedImageView?.setImageBitmap(selectedBitmap)
                 selectedImageView?.visibility = View.VISIBLE
             }
         }
-
     }
 
     override fun onCreateView(
@@ -68,11 +65,9 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
             insets
         }
 
-        // SharedPreferencesManager'ı başlatıyoruz
         sharedPreferencesManager = SharedPreferencesManager(requireContext())
 
         cardAdapter = CardAdapter(cardList, { card ->
-            // Kart tıklandığında yapılacaklar
             val dialogFragment = CardDetailDialogFragment()
             dialogFragment.setTargetFragment(this, 0)
             dialogFragment.arguments = Bundle().apply {
@@ -82,25 +77,21 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
             }
             dialogFragment.show(parentFragmentManager, "CardDetailDialogFragment")
         }, { card ->
-            // Kart uzun basıldığında yapılacaklar
             showCardPopupMenu(card)
         })
 
         binding.rvUnlearned.adapter = cardAdapter
         binding.rvUnlearned.layoutManager = LinearLayoutManager(context)
 
-        // Verileri yükle ve RecyclerView'i güncelle
         loadDeckData()
 
-        // Kart ekleme butonu
         binding.fabAddCard.setOnClickListener {
             showAddCardDialog()
         }
 
-        // Swipe-to-Refresh işlemi
         binding.swipeRefreshLayout.setOnRefreshListener {
-            shuffleCards() // Kartları karıştırma işlemi
-            binding.swipeRefreshLayout.isRefreshing = false // Swipe Refresh'i durdur
+            shuffleCards()
+            binding.swipeRefreshLayout.isRefreshing = false
         }
 
         return view
@@ -110,17 +101,16 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         super.onViewCreated(view, savedInstanceState)
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            shuffleCards() // Kartları karıştırma işlemi
-            binding.swipeRefreshLayout.isRefreshing = false // Swipe Refresh'i durdur
+            shuffleCards()
+            binding.swipeRefreshLayout.isRefreshing = false
         }
 
-        loadDeckData()  // Deck verilerini yükle
-        cardAdapter.notifyDataSetChanged()  // Adapter'ı güncelle
+        loadDeckData()
+        cardAdapter.notifyDataSetChanged()
     }
 
     override fun onResume() {
         super.onResume()
-//        Log.d("UnlearnedFragment KEKOD", "onResume called - Deck data is being loaded.")
         loadDeckData()
         cardAdapter.notifyDataSetChanged()
     }
@@ -128,18 +118,17 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
     private fun shuffleCards() {
         cardList.shuffle()
 
-        // Her karta benzersiz bir order değeri ata
         val uniqueOrderSet = mutableSetOf<Int>()
         cardList.forEachIndexed { index, card ->
             var order = index + 1
             while (uniqueOrderSet.contains(order)) {
-                order++ // Eğer order numarası kullanılmışsa bir sonrakine geç
+                order++
             }
             card.order = order
-            uniqueOrderSet.add(order) // Order numarasını kaydet
+            uniqueOrderSet.add(order)
         }
 
-        updateDeckInList() // Hafızayı güncelle
+        updateDeckInList()
 
         cardAdapter.notifyDataSetChanged()
     }
@@ -148,49 +137,26 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         val deckList = sharedPreferencesManager.getDecks()
         val deckIndex = deckList.indexOfFirst { it.deckName == currentDeck.deckName }
         if (deckIndex != -1) {
-            // Log ile kartın resim bilgisini kaydetmeden önce kontrol edelim
-            currentDeck.cards.forEach {
-                Log.d("UnlearnedFragment KEKOD", "Card before saving: ${it.word}, Image length: ${it.image?.length}")
-            }
-
-            // Güncellenmiş deck'i listeye yerleştiriyoruz
             deckList[deckIndex] = currentDeck
             sharedPreferencesManager.saveDecks(deckList)
-
-            Log.d("UnlearnedFragment KEKOD", "Deck updated and saved successfully. Number of cards: ${currentDeck.cards.size}")
-            currentDeck.cards.forEach {
-                Log.d("UnlearnedFragment KEKOD", "Updated card after saving: ${it.word}, Image length: ${it.image?.length}")
-            }
-        } else {
-            Log.e("UnlearnedFragment KEKOD", "Error: Deck not found in deckList")
         }
     }
-
 
     fun loadDeckData() {
         val deckName = requireActivity().intent.getStringExtra("deckName")
         val deckList = sharedPreferencesManager.getDecks()
         currentDeck = deckList.find { it.deckName == deckName } ?: Deck(deckName ?: "")
 
-        // Eğer resimler henüz atanmadıysa bu fonksiyonu çalıştırıyoruz
         if (!sharedPreferencesManager.isImagesAssigned()) {
             assignImagesToCards()
-            sharedPreferencesManager.setImagesAssigned(true) // Resimlerin atandığını kaydediyoruz
+            sharedPreferencesManager.setImagesAssigned(true)
         }
 
-        // Kart listesini temizleyip tekrar yükleyelim
         cardList.clear()
         cardList.addAll(currentDeck.cards.filter { !it.isLearned }.sortedBy { it.order })
 
-        // RecyclerView'i güncelle
         cardAdapter.notifyDataSetChanged()
-
-        Log.d("UnlearnedFragment KEKOD", "Deck data loaded, card list size: ${cardList.size}")
-        currentDeck.cards.forEach {
-            Log.d("UnlearnedFragment KEKOD", "Loaded card: ${it.word}, Image length: ${it.image?.length}")
-        }
     }
-
 
     private fun showAddCardDialog() {
         val builder = AlertDialog.Builder(requireContext())
@@ -221,10 +187,8 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
             val meaning2 = etMeaning2.text.toString()
 
             if (word.isNotEmpty() && meaning1.isNotEmpty()) {
-                // Mevcut kartlar arasında en yüksek 'order' değerini bul
                 val maxOrder = currentDeck.cards.maxOfOrNull { it.order } ?: 0
 
-                // Yeni kart eklenirken order değerini maxOrder'dan bir fazlası olarak ata
                 val newCard = Card(
                     word = word,
                     meaning1 = meaning1,
@@ -233,11 +197,9 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
                     isLearned = false,
                     order = maxOrder + 1
                 )
-                Log.d("UnlearnedFragment KEKOD", "New card created: $newCard") // Log ile kartı kontrol edelim
                 currentDeck.cards.add(newCard)
-                updateDeckInList() // Güncellemeyi kaydediyoruz
-                loadDeckData() // Verileri yeniden yüklüyoruz
-                Log.d("UnlearnedFragment KEKOD", "Current deck after adding card: $currentDeck")
+                updateDeckInList()
+                loadDeckData()
                 dialog.dismiss()
             }
         }
@@ -256,12 +218,10 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
 
-
     private fun showCardPopupMenu(card: Card) {
         val popupMenu = PopupMenu(requireContext(), requireView())
         popupMenu.menuInflater.inflate(R.menu.menu_card_options, popupMenu.menu)
 
-        // UnlearnedFragment'ta Toggle Learned menüsü
         val toggleMenuItem = popupMenu.menu.findItem(R.id.itemToggleLearned)
         toggleMenuItem.title = "Toggle Learned"
 
@@ -287,20 +247,16 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
     }
 
     private fun toggleLearnedState(card: Card) {
-        card.isLearned = true  // Kart artık "learned" olacak
+        card.isLearned = true
 
-        // Learned kartlar arasında sıralama sağlamak için en yüksek order'ı bul
         val maxOrderInLearned = sharedPreferencesManager.getDecks()
             .flatMap { it.cards }
             .filter { it.isLearned }
             .maxOfOrNull { it.order ?: 0 } ?: 0
 
-        // Kartı learned listesine eklerken en büyük order'ın bir fazlasını ata
         card.order = maxOrderInLearned + 1
-        // Hafızadaki verileri güncelle
         updateDeckInList()
 
-        // Verileri yeniden yükle ve RecyclerView'i güncelle
         loadDeckData()
     }
 
@@ -331,7 +287,7 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         btnSelectImage.setOnClickListener {
             val intentToGallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             activityResultLauncher.launch(intentToGallery)
-            selectedImageView = imgViewPreview // Seçilen resmi burada gösterelim
+            selectedImageView = imgViewPreview
         }
 
         with(builder) {
@@ -342,16 +298,14 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
                 card.meaning1 = etMeaning1.text.toString()
                 card.meaning2 = etMeaning2.text.toString()
 
-                // Eğer yeni bir resim seçildiyse onu kaydet
                 if (selectedBitmap != null) {
                     val base64Image = bitmapToBase64(selectedBitmap!!)
                     card.image = base64Image
-                    Log.d("UnlearnedFragment KEKOD", "New image Base64 length: ${base64Image.length}")
                     selectedBitmap = null
                 }
 
-                updateDeckInList() // Güncellemeleri kaydet
-                loadDeckData() // Verileri yeniden yükle
+                updateDeckInList()
+                loadDeckData()
                 cardAdapter.notifyDataSetChanged()
             }
             setNegativeButton("Cancel") { dialog, which ->
@@ -361,7 +315,6 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         }
     }
 
-
     private fun showDeleteCardDialog(card: Card) {
         val builder = AlertDialog.Builder(requireContext())
         with(builder) {
@@ -369,8 +322,8 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
             setMessage("Are you sure?")
             setPositiveButton("Yes") { dialog, which ->
                 currentDeck.cards.remove(card)
-                updateDeckInList() // Değişiklikleri hafızaya yaz
-                loadDeckData() // Verileri tekrar yükle
+                updateDeckInList()
+                loadDeckData()
                 cardAdapter.notifyDataSetChanged()
             }
             setNegativeButton("Cancel") { dialog, which -> }
@@ -384,30 +337,21 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
     }
 
     override fun onCardStateChanged() {
-        // Verileri güncelleyip RecyclerView'i yenileme
         loadDeckData()
         cardAdapter.notifyDataSetChanged()
-//        Log.d("UnlearnedFragment", "Card durumu değişti, veri yenilendi.")
     }
 
     private fun assignImagesToCards() {
-        // Örnek olarak 50 tane resim ve kartı eşleştiriyoruz
         for ((index, card) in currentDeck.cards.withIndex()) {
-            // Resim ismini oluşturun (örneğin image1.png, image2.png ...)
-            val imageName = "image${index + 1}" // Eğer resim dosyalarının adı bu formatta ise
+            val imageName = "image${index + 1}"
             val resourceId = resources.getIdentifier(imageName, "drawable", requireContext().packageName)
 
             if (resourceId != 0) {
-                // Bitmap'e çeviriyoruz
                 val bitmap = BitmapFactory.decodeResource(resources, resourceId)
                 card.image = bitmapToBase64(bitmap)
-            } else {
-                Log.e("UnlearnedFragment", "Image not found for card: ${card.word}")
             }
         }
 
-        // Kartlara resimleri ekledikten sonra SharedPreferences'i güncelleyelim
         updateDeckInList()
-        Log.d("UnlearnedFragment", "Images assigned to cards and saved.")
     }
 }

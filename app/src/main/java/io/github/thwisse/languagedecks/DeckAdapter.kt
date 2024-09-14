@@ -26,7 +26,6 @@ class DeckAdapter(
             onItemClick(deck)
         }
 
-        // Uzun basıldığında popup menü açma
         holder.binding.root.setOnLongClickListener {
             onLongClick(deck, it)
             true

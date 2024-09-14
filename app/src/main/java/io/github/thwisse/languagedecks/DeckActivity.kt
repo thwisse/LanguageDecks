@@ -34,36 +34,18 @@ class DeckActivity : AppCompatActivity() {
 
         sharedPreferencesManager = SharedPreferencesManager(this)
 
-        // DeckActivity'ye gelen deckName bilgisini alıyoruz
         val deckName = intent.getStringExtra("deckName")
 
-        // Deck'i SharedPreferences'dan alıyoruz
         val deckList = sharedPreferencesManager.getDecks()
         currentDeck = deckList.find { it.deckName == deckName } ?: Deck(deckName ?: "")
 
-        // NavController'ı NavHostFragment'tan alıyoruz
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFragmentView) as NavHostFragment
         val navController = navHostFragment.navController
 
-        // BottomNavigationView ile NavController'ı ilişkilendiriyoruz
         binding.bottomNavigationView.setupWithNavController(navController)
-
-        // Destenin içindeki tüm kartları loglamak
-        logDeckCards(currentDeck)
     }
 
     private fun enableEdgeToEdge() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
-    }
-
-    private fun logDeckCards(deck: Deck) {
-//        Log.d("DeckActivity KEKOD", "Deck: ${deck.deckName}, Card Count: ${deck.cards.size}")
-        if (deck.cards.isEmpty()) {
-//            Log.d("DeckActivity KEKOD", "This deck is empty.")
-        } else {
-            for (card in deck.cards) {
-//                Log.d("DeckActivity KEKOD", "Word: ${card.word}, isLearned: ${card.isLearned}")
-            }
-        }
     }
 }

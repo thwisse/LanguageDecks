@@ -41,7 +41,6 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
         sharedPreferencesManager = SharedPreferencesManager(requireContext())
 
         cardAdapter = CardAdapter(cardList, { card ->
-            // Kart tıklandığında yapılacaklar
             val dialogFragment = CardDetailDialogFragment()
             dialogFragment.setTargetFragment(this, 0) // targetFragment ayarlandı
             dialogFragment.arguments = Bundle().apply {
@@ -51,10 +50,8 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
             }
             dialogFragment.show(parentFragmentManager, "CardDetailDialogFragment")
         }, { card ->
-            // Kart uzun basıldığında yapılacaklar
             showCardPopupMenu(card)
         })
-
 
         binding.rvLearned.adapter = cardAdapter
         binding.rvLearned.layoutManager = LinearLayoutManager(context)
@@ -66,27 +63,22 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
 
     override fun onResume() {
         super.onResume()
-//        Log.d("LearnedFragment KEKOD", "onResume called - Deck data is being loaded.")
         loadDeckData()
         cardAdapter.notifyDataSetChanged()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadDeckData()  // Deck verilerini yükle
-        cardAdapter.notifyDataSetChanged()  // Adapter'ı güncelle
+        loadDeckData()
+        cardAdapter.notifyDataSetChanged()
     }
-
 
     private fun updateDeckInList() {
         val deckList = sharedPreferencesManager.getDecks()
         val deckIndex = deckList.indexOfFirst { it.deckName == currentDeck.deckName }
         if (deckIndex != -1) {
-            deckList[deckIndex] = currentDeck // currentDeck'teki güncellemeleri tüm listeye aktar
+            deckList[deckIndex] = currentDeck
             sharedPreferencesManager.saveDecks(deckList)
-//            Log.d("LearnedFragment KEKOD", "Deck updated in deckList and saved.")
-        } else {
-//            Log.e("LearnedFragment KEKOD", "Error: Deck not found in deckList")
         }
     }
 
@@ -95,13 +87,10 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
         val deckList = sharedPreferencesManager.getDecks()
         currentDeck = deckList.find { it.deckName == deckName } ?: Deck(deckName ?: "")
 
-        // Kart listesini önce temizleyelim, sonra yeniden dolduralım
         cardList.clear()
 
-        // Sıralamayı burada 'order' değerine göre yapalım
         cardList.addAll(currentDeck.cards.filter { it.isLearned }.sortedBy { it.order })
 
-        // RecyclerView'i güncelle
         cardAdapter.notifyDataSetChanged()
     }
 
@@ -110,7 +99,6 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
         val popupMenu = PopupMenu(requireContext(), requireView())
         popupMenu.menuInflater.inflate(R.menu.menu_card_options, popupMenu.menu)
 
-        // LearnedFragment'ta Toggle Unlearned menüsü
         val toggleMenuItem = popupMenu.menu.findItem(R.id.itemToggleLearned)
         toggleMenuItem.title = "Toggle Unlearned"
 
@@ -125,7 +113,7 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
                     true
                 }
                 R.id.itemToggleLearned -> {
-                    toggleUnlearnedState(card) // Unlearned'e taşı
+                    toggleUnlearnedState(card)
                     true
                 }
                 else -> false
@@ -136,9 +124,8 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
     }
 
     private fun toggleUnlearnedState(card: Card) {
-        card.isLearned = false  // Kart artık "unlearned" olacak
+        card.isLearned = false
 
-        // Unlearned kartlara geçtiğinde order'ı en sona ekle
         val maxOrderInUnlearned = sharedPreferencesManager.getDecks()
             .flatMap { it.cards }
             .filter { !it.isLearned }
@@ -146,17 +133,14 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
 
         card.order = maxOrderInUnlearned + 1
 
-        // Hafızadaki verileri güncelle
         updateDeckInList()
 
-        // Kartı learned listesinden kaldır
         cardList.remove(card)
         cardAdapter.notifyDataSetChanged()
 
-        // Unlearned fragment'teki listeyi güncelle
         (activity as DeckActivity).supportFragmentManager.findFragmentById(R.id.navHostFragmentView)?.let { fragment ->
             if (fragment is UnlearnedFragment) {
-                fragment.loadDeckData()  // UnlearnedFragment güncelleniyor
+                fragment.loadDeckData()
             }
         }
     }
@@ -172,14 +156,11 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
         val etMeaning2 = dialogLayout.findViewById<EditText>(R.id.edtEditMeaning2)
         val btnSelectImage = dialogLayout.findViewById<Button>(R.id.btnEditImage)
 
-        // Var olan kart verilerini doldur
         etWord.setText(card.word)
         etMeaning1.setText(card.meaning1)
         etMeaning2.setText(card.meaning2)
 
-        btnSelectImage.setOnClickListener {
-            // Galeri açma işlemi burada
-        }
+        btnSelectImage.setOnClickListener {}
 
         with(builder) {
             setTitle("Edit Card")
@@ -189,8 +170,8 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
                 card.meaning1 = etMeaning1.text.toString()
                 card.meaning2 = etMeaning2.text.toString()
 
-                updateDeckInList() // Değişiklikleri hafızaya yaz
-                loadDeckData() // Verileri tekrar yükle
+                updateDeckInList()
+                loadDeckData()
                 cardAdapter.notifyDataSetChanged()
             }
             setNegativeButton("Cancel") { dialog, which -> }
@@ -205,8 +186,8 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
             setMessage("Are you sure?")
             setPositiveButton("Yes") { dialog, which ->
                 currentDeck.cards.remove(card)
-                updateDeckInList() // Değişiklikleri hafızaya yaz
-                loadDeckData() // Verileri tekrar yükle
+                updateDeckInList()
+                loadDeckData()
                 cardAdapter.notifyDataSetChanged()
             }
             setNegativeButton("Cancel") { dialog, which -> }
@@ -220,10 +201,7 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
     }
 
     override fun onCardStateChanged() {
-        // Verileri güncelleyip RecyclerView'i yenileme
         loadDeckData()
         cardAdapter.notifyDataSetChanged()
-//        Log.d("LearnedFragment", "Card durumu değişti, veri yenilendi.")
     }
-
 }

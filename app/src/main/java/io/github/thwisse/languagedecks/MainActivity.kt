@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         installSplashScreen()
 
         super.onCreate(savedInstanceState)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
 
@@ -43,27 +44,19 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // SharedPreferencesManager oluşturulması
         sharedPreferencesManager = SharedPreferencesManager(this)
 
-        // SharedPreferences'tan yüklenen deck listesi
         deckList.addAll(sharedPreferencesManager.getDecks())
 
-        // Eğer daha önce örnek deste eklenmemişse ekle
         if (deckList.isEmpty()) {
             val sampleDeck = loadSampleDeck(this)
             sampleDeck?.let {
                 deckList.add(it)
                 sharedPreferencesManager.saveDecks(deckList)
 
-                // Resimlerin henüz atanmadığını belirtiyoruz
                 sharedPreferencesManager.setImagesAssigned(false)
             }
         }
-
-
-        // Log kaydı oluşturma
-        logDeckInfo(deckList)
 
         deckAdapter = DeckAdapter(deckList, { deck ->
             val intent = Intent(this, DeckActivity::class.java)
@@ -76,19 +69,8 @@ class MainActivity : AppCompatActivity() {
         binding.rvDecks.adapter = deckAdapter
         binding.rvDecks.layoutManager = LinearLayoutManager(this)
 
-        // Yeni deste eklemek için bir dialog oluşturma
         binding.fabAddDeck.setOnClickListener {
             showAddDeckDialog()
-        }
-    }
-
-    private fun logDeckInfo(deckList: List<Deck>) {
-        if (deckList.isEmpty()) {
-//            Log.d("MainActivity KEKOD", "No decks found in SharedPreferences")
-        } else {
-            for (deck in deckList) {
-//                Log.d("MainActivity KEKOD", "Deck: ${deck.deckName}, Card Count: ${deck.cards.size}")
-            }
         }
     }
 
@@ -107,9 +89,7 @@ class MainActivity : AppCompatActivity() {
                 deckAdapter.notifyDataSetChanged()
                 sharedPreferencesManager.saveDecks(deckList)
             }
-            setNegativeButton("Cancel") { dialog, which ->
-                // İptal
-            }
+            setNegativeButton("Cancel") { dialog, which -> }
             show()
         }
     }

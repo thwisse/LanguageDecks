@@ -9,7 +9,7 @@ data class Card(
     var word: String,
     var meaning1: String,
     var meaning2: String,
-    var image: String? = null, // Base64 olarak resim saklanacak
+    var image: String? = null,
     var isLearned: Boolean = false,
-    var order: Int = 0, // Yeni alan: order
+    var order: Int = 0,
 )
