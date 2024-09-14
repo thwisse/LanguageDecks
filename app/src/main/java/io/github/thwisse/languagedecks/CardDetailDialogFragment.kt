@@ -37,6 +37,12 @@ class CardDetailDialogFragment : DialogFragment() {
         binding.textViewMeaning1.text = meaning1
         binding.textViewMeaning2.text = meaning2
 
+        if (binding.textViewMeaning2.text.isNullOrEmpty()) {
+            binding.textViewMeaning2.visibility = View.GONE
+        } else {
+            binding.textViewMeaning2.visibility = View.VISIBLE
+        }
+
         val deckList = sharedPreferencesManager.getDecks()
         currentDeck = deckList.find { it.cards.any { card -> card.word == word } }!!
         currentCard = currentDeck.cards.find { it.word == word }!!

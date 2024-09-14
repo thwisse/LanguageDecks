@@ -168,8 +168,6 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         val etMeaning2 = dialogLayout.findViewById<EditText>(R.id.edtMeaning2)
         val btnSelectImage = dialogLayout.findViewById<Button>(R.id.btnSelectImage)
         val imgViewPreview = dialogLayout.findViewById<ImageView>(R.id.imgViewAddPreview)
-        val btnAddCard = dialogLayout.findViewById<Button>(R.id.btnAddCard) // XML'deki Add butonu
-        val btnCancelCard = dialogLayout.findViewById<Button>(R.id.btnCancelCard) // XML'deki Cancel butonu
 
         selectedImageView = imgViewPreview
         selectedImageView?.visibility = View.GONE
@@ -179,37 +177,37 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
             activityResultLauncher.launch(intentToGallery)
         }
 
-        val dialog = builder.setView(dialogLayout).create()
+        builder.setView(dialogLayout)
+            .setPositiveButton("Add") { dialog, _ ->
+                val word = etWord.text.toString()
+                val meaning1 = etMeaning1.text.toString()
+                val meaning2 = etMeaning2.text.toString()
 
-        btnAddCard.setOnClickListener {
-            val word = etWord.text.toString()
-            val meaning1 = etMeaning1.text.toString()
-            val meaning2 = etMeaning2.text.toString()
+                if (word.isNotEmpty() && meaning1.isNotEmpty()) {
+                    val maxOrder = currentDeck.cards.maxOfOrNull { it.order } ?: 0
 
-            if (word.isNotEmpty() && meaning1.isNotEmpty()) {
-                val maxOrder = currentDeck.cards.maxOfOrNull { it.order } ?: 0
-
-                val newCard = Card(
-                    word = word,
-                    meaning1 = meaning1,
-                    meaning2 = meaning2,
-                    image = selectedBitmap?.let { bitmapToBase64(it) },
-                    isLearned = false,
-                    order = maxOrder + 1
-                )
-                currentDeck.cards.add(newCard)
-                updateDeckInList()
-                loadDeckData()
+                    val newCard = Card(
+                        word = word,
+                        meaning1 = meaning1,
+                        meaning2 = meaning2,
+                        image = selectedBitmap?.let { bitmapToBase64(it) },
+                        isLearned = false,
+                        order = maxOrder + 1
+                    )
+                    currentDeck.cards.add(newCard)
+                    updateDeckInList()
+                    loadDeckData()
+                    dialog.dismiss()
+                }
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
             }
-        }
 
-        btnCancelCard.setOnClickListener {
-            dialog.dismiss()
-        }
-
+        val dialog = builder.create()
         dialog.show()
     }
+
 
     private fun bitmapToBase64(bitmap: Bitmap): String {
         val byteArrayOutputStream = ByteArrayOutputStream()
