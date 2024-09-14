@@ -42,11 +42,11 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
 
         cardAdapter = CardAdapter(cardList, { card ->
             val dialogFragment = CardDetailDialogFragment()
-            dialogFragment.setTargetFragment(this, 0) // targetFragment ayarlandı
+            dialogFragment.setTargetFragment(this, 0)
             dialogFragment.arguments = Bundle().apply {
                 putString("word", card.word)
-                putString("meaning1", card.meaning1)
-                putString("meaning2", card.meaning2)
+                putString("meaning", card.meaning)
+                putString("definition", card.definition)
             }
             dialogFragment.show(parentFragmentManager, "CardDetailDialogFragment")
         }, { card ->
@@ -152,13 +152,13 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
         val dialogLayout = inflater.inflate(R.layout.dialog_edit_card, null)
 
         val etWord = dialogLayout.findViewById<EditText>(R.id.edtEditWord)
-        val etMeaning1 = dialogLayout.findViewById<EditText>(R.id.edtEditMeaning1)
-        val etMeaning2 = dialogLayout.findViewById<EditText>(R.id.edtEditMeaning2)
+        val etMeaning = dialogLayout.findViewById<EditText>(R.id.edtEditMeaning)
+        val etDefinition = dialogLayout.findViewById<EditText>(R.id.edtEditDefinition)
         val btnSelectImage = dialogLayout.findViewById<Button>(R.id.btnEditImage)
 
         etWord.setText(card.word)
-        etMeaning1.setText(card.meaning1)
-        etMeaning2.setText(card.meaning2)
+        etMeaning.setText(card.meaning)
+        etDefinition.setText(card.definition)
 
         btnSelectImage.setOnClickListener {}
 
@@ -167,8 +167,8 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
             setView(dialogLayout)
             setPositiveButton("Save") { dialog, which ->
                 card.word = etWord.text.toString()
-                card.meaning1 = etMeaning1.text.toString()
-                card.meaning2 = etMeaning2.text.toString()
+                card.meaning = etMeaning.text.toString()
+                card.definition = etDefinition.text.toString()
 
                 updateDeckInList()
                 loadDeckData()

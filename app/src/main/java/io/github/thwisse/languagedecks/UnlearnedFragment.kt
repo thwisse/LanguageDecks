@@ -72,8 +72,8 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
             dialogFragment.setTargetFragment(this, 0)
             dialogFragment.arguments = Bundle().apply {
                 putString("word", card.word)
-                putString("meaning1", card.meaning1)
-                putString("meaning2", card.meaning2)
+                putString("meaning", card.meaning)
+                putString("definition", card.definition)
             }
             dialogFragment.show(parentFragmentManager, "CardDetailDialogFragment")
         }, { card ->
@@ -164,8 +164,8 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         val dialogLayout = inflater.inflate(R.layout.dialog_add_card, null)
 
         val etWord = dialogLayout.findViewById<EditText>(R.id.edtWord)
-        val etMeaning1 = dialogLayout.findViewById<EditText>(R.id.edtMeaning1)
-        val etMeaning2 = dialogLayout.findViewById<EditText>(R.id.edtMeaning2)
+        val etMeaning = dialogLayout.findViewById<EditText>(R.id.edtMeaning)
+        val etDefinition = dialogLayout.findViewById<EditText>(R.id.edtDefinition)
         val btnSelectImage = dialogLayout.findViewById<Button>(R.id.btnSelectImage)
         val imgViewPreview = dialogLayout.findViewById<ImageView>(R.id.imgViewAddPreview)
 
@@ -180,16 +180,16 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         builder.setView(dialogLayout)
             .setPositiveButton("Add") { dialog, _ ->
                 val word = etWord.text.toString()
-                val meaning1 = etMeaning1.text.toString()
-                val meaning2 = etMeaning2.text.toString()
+                val meaning = etMeaning.text.toString()
+                val definition = etDefinition.text.toString()
 
-                if (word.isNotEmpty() && meaning1.isNotEmpty()) {
+                if (word.isNotEmpty() && meaning.isNotEmpty()) {
                     val maxOrder = currentDeck.cards.maxOfOrNull { it.order } ?: 0
 
                     val newCard = Card(
                         word = word,
-                        meaning1 = meaning1,
-                        meaning2 = meaning2,
+                        meaning = meaning,
+                        definition = definition,
                         image = selectedBitmap?.let { bitmapToBase64(it) },
                         isLearned = false,
                         order = maxOrder + 1
@@ -264,14 +264,14 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         val dialogLayout = inflater.inflate(R.layout.dialog_edit_card, null)
 
         val etWord = dialogLayout.findViewById<EditText>(R.id.edtEditWord)
-        val etMeaning1 = dialogLayout.findViewById<EditText>(R.id.edtEditMeaning1)
-        val etMeaning2 = dialogLayout.findViewById<EditText>(R.id.edtEditMeaning2)
+        val etMeaning = dialogLayout.findViewById<EditText>(R.id.edtEditMeaning)
+        val etDefinition = dialogLayout.findViewById<EditText>(R.id.edtEditDefinition)
         val btnSelectImage = dialogLayout.findViewById<Button>(R.id.btnEditImage)
         val imgViewPreview = dialogLayout.findViewById<ImageView>(R.id.imgViewEditPreview)
 
         etWord.setText(card.word)
-        etMeaning1.setText(card.meaning1)
-        etMeaning2.setText(card.meaning2)
+        etMeaning.setText(card.meaning)
+        etDefinition.setText(card.definition)
 
         if (card.image != null) {
             val decodedByte = Base64.decode(card.image, Base64.DEFAULT)
@@ -293,8 +293,8 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
             setView(dialogLayout)
             setPositiveButton("Save") { dialog, which ->
                 card.word = etWord.text.toString()
-                card.meaning1 = etMeaning1.text.toString()
-                card.meaning2 = etMeaning2.text.toString()
+                card.meaning = etMeaning.text.toString()
+                card.definition = etDefinition.text.toString()
 
                 if (selectedBitmap != null) {
                     val base64Image = bitmapToBase64(selectedBitmap!!)

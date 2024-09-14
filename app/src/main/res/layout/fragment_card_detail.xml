@@ -17,18 +17,18 @@
         android:padding="5dp"/>
 
     <TextView
-        android:id="@+id/textViewMeaning1"
+        android:id="@+id/textViewMeaning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Meaning 1"
+        android:text="Meaning"
         android:padding="5dp"
         android:paddingTop="8dp" />
 
     <TextView
-        android:id="@+id/textViewMeaning2"
+        android:id="@+id/textViewDefinition"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Meaning 2"
+        android:text="Definition"
         android:padding="5dp" />
 
     <Button

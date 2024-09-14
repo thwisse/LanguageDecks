@@ -7,8 +7,8 @@ data class Deck(
 
 data class Card(
     var word: String,
-    var meaning1: String,
-    var meaning2: String,
+    var meaning: String,
+    var definition: String,
     var image: String? = null,
     var isLearned: Boolean = false,
     var order: Int = 0,

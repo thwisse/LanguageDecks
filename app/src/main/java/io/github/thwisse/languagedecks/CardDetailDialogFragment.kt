@@ -30,17 +30,17 @@ class CardDetailDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val word = arguments?.getString("word")
-        val meaning1 = arguments?.getString("meaning1")
-        val meaning2 = arguments?.getString("meaning2")
+        val meaning = arguments?.getString("meaning")
+        val definition = arguments?.getString("definition")
 
         binding.textViewWord.text = word
-        binding.textViewMeaning1.text = meaning1
-        binding.textViewMeaning2.text = meaning2
+        binding.textViewMeaning.text = meaning
+        binding.textViewDefinition.text = definition
 
-        if (binding.textViewMeaning2.text.isNullOrEmpty()) {
-            binding.textViewMeaning2.visibility = View.GONE
+        if (binding.textViewDefinition.text.isNullOrEmpty()) {
+            binding.textViewDefinition.visibility = View.GONE
         } else {
-            binding.textViewMeaning2.visibility = View.VISIBLE
+            binding.textViewDefinition.visibility = View.VISIBLE
         }
 
         val deckList = sharedPreferencesManager.getDecks()
