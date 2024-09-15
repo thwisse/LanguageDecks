@@ -74,6 +74,7 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
                 putString("word", card.word)
                 putString("meaning", card.meaning)
                 putString("definition", card.definition)
+                putString("usage", card.usage)
             }
             dialogFragment.show(parentFragmentManager, "CardDetailDialogFragment")
         }, { card ->
@@ -170,6 +171,7 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         val etWord = dialogLayout.findViewById<EditText>(R.id.edtWord)
         val etMeaning = dialogLayout.findViewById<EditText>(R.id.edtMeaning)
         val etDefinition = dialogLayout.findViewById<EditText>(R.id.edtDefinition)
+        val etUsage = dialogLayout.findViewById<EditText>(R.id.edtUsage)
         val btnSelectImage = dialogLayout.findViewById<Button>(R.id.btnSelectImage)
         val imgViewPreview = dialogLayout.findViewById<ImageView>(R.id.imgViewAddPreview)
 
@@ -186,6 +188,7 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
                 val word = etWord.text.toString()
                 val definition = etDefinition.text.toString()
                 val meaning = etMeaning.text.toString()
+                val usage = etUsage.text.toString()
 
                 if (word.isNotEmpty() && meaning.isNotEmpty()) {
                     val maxOrder = currentDeck.cards.maxOfOrNull { it.order } ?: 0
@@ -196,7 +199,8 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
                         definition = definition,
                         image = selectedBitmap?.let { bitmapToBase64(it) },
                         isLearned = false,
-                        order = maxOrder + 1
+                        order = maxOrder + 1,
+                        usage = usage
                     )
                     currentDeck.cards.add(newCard)
                     updateDeckInList()
@@ -214,7 +218,6 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         dialog.show()
     }
 
-
     private fun bitmapToBase64(bitmap: Bitmap): String {
         val byteArrayOutputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 75, byteArrayOutputStream)
@@ -226,9 +229,6 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         val popupMenu = PopupMenu(requireContext(), requireView())
         popupMenu.menuInflater.inflate(R.menu.menu_card_options, popupMenu.menu)
 
-        val toggleMenuItem = popupMenu.menu.findItem(R.id.itemToggleLearned)
-        toggleMenuItem.title = "Toggle Learned"
-
         popupMenu.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.itemEdit -> {
@@ -239,29 +239,11 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
                     showDeleteCardDialog(card)
                     true
                 }
-                R.id.itemToggleLearned -> {
-                    toggleLearnedState(card)
-                    true
-                }
                 else -> false
             }
         }
 
         popupMenu.show()
-    }
-
-    private fun toggleLearnedState(card: Card) {
-        card.isLearned = true
-
-        val maxOrderInLearned = sharedPreferencesManager.getDecks()
-            .flatMap { it.cards }
-            .filter { it.isLearned }
-            .maxOfOrNull { it.order ?: 0 } ?: 0
-
-        card.order = maxOrderInLearned + 1
-        updateDeckInList()
-
-        loadDeckData()
     }
 
     private fun showEditCardDialog(card: Card) {
@@ -272,12 +254,14 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         val etWord = dialogLayout.findViewById<EditText>(R.id.edtEditWord)
         val etMeaning = dialogLayout.findViewById<EditText>(R.id.edtEditMeaning)
         val etDefinition = dialogLayout.findViewById<EditText>(R.id.edtEditDefinition)
+        val etUsage = dialogLayout.findViewById<EditText>(R.id.edtEditUsage)
         val btnSelectImage = dialogLayout.findViewById<Button>(R.id.btnEditImage)
         val imgViewPreview = dialogLayout.findViewById<ImageView>(R.id.imgViewEditPreview)
 
         etWord.setText(card.word)
         etMeaning.setText(card.meaning)
         etDefinition.setText(card.definition)
+        etUsage.setText(card.usage)
 
         if (card.image != null) {
             val decodedByte = Base64.decode(card.image, Base64.DEFAULT)
@@ -301,6 +285,7 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
                 card.word = etWord.text.toString()
                 card.definition = etDefinition.text.toString()
                 card.meaning = etMeaning.text.toString()
+                card.usage = etUsage.text.toString()
 
                 if (selectedBitmap != null) {
                     val base64Image = bitmapToBase64(selectedBitmap!!)

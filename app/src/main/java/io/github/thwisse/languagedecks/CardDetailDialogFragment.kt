@@ -32,15 +32,23 @@ class CardDetailDialogFragment : DialogFragment() {
         val word = arguments?.getString("word")
         val meaning = arguments?.getString("meaning")
         val definition = arguments?.getString("definition")
+        val usage = arguments?.getString("usage")
 
         binding.textViewWord.text = word
         binding.textViewMeaning.text = meaning
         binding.textViewDefinition.text = definition
+        binding.textViewUsage.text = usage
 
         if (binding.textViewDefinition.text.isNullOrEmpty()) {
             binding.textViewDefinition.visibility = View.GONE
         } else {
             binding.textViewDefinition.visibility = View.VISIBLE
+        }
+
+        if (binding.textViewUsage.text.isNullOrEmpty()) {
+            binding.textViewUsage.visibility = View.GONE
+        } else {
+            binding.textViewUsage.visibility = View.VISIBLE
         }
 
         val deckList = sharedPreferencesManager.getDecks()

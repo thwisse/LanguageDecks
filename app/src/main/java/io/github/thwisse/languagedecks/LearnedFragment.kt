@@ -40,6 +40,7 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
 
         sharedPreferencesManager = SharedPreferencesManager(requireContext())
 
+        //TODO burdan cozmeye calis resim isini.
         cardAdapter = CardAdapter(cardList, { card ->
             val dialogFragment = CardDetailDialogFragment()
             dialogFragment.setTargetFragment(this, 0)
@@ -47,6 +48,7 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
                 putString("word", card.word)
                 putString("meaning", card.meaning)
                 putString("definition", card.definition)
+                putString("usage", card.usage)
             }
             dialogFragment.show(parentFragmentManager, "CardDetailDialogFragment")
         }, { card ->
@@ -102,9 +104,6 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
         val popupMenu = PopupMenu(requireContext(), requireView())
         popupMenu.menuInflater.inflate(R.menu.menu_card_options, popupMenu.menu)
 
-        val toggleMenuItem = popupMenu.menu.findItem(R.id.itemToggleLearned)
-        toggleMenuItem.title = "Toggle Unlearned"
-
         popupMenu.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.itemEdit -> {
@@ -115,39 +114,12 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
                     showDeleteCardDialog(card)
                     true
                 }
-                R.id.itemToggleLearned -> {
-                    toggleUnlearnedState(card)
-                    true
-                }
                 else -> false
             }
         }
 
         popupMenu.show()
     }
-
-    private fun toggleUnlearnedState(card: Card) {
-        card.isLearned = false
-
-        val maxOrderInUnlearned = sharedPreferencesManager.getDecks()
-            .flatMap { it.cards }
-            .filter { !it.isLearned }
-            .maxOfOrNull { it.order ?: 0 } ?: 0
-
-        card.order = maxOrderInUnlearned + 1
-
-        updateDeckInList()
-
-        cardList.remove(card)
-        cardAdapter.notifyDataSetChanged()
-
-        (activity as DeckActivity).supportFragmentManager.findFragmentById(R.id.navHostFragmentView)?.let { fragment ->
-            if (fragment is UnlearnedFragment) {
-                fragment.loadDeckData()
-            }
-        }
-    }
-
 
     private fun showEditCardDialog(card: Card) {
         val builder = AlertDialog.Builder(requireContext())
@@ -157,11 +129,13 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
         val etWord = dialogLayout.findViewById<EditText>(R.id.edtEditWord)
         val etMeaning = dialogLayout.findViewById<EditText>(R.id.edtEditMeaning)
         val etDefinition = dialogLayout.findViewById<EditText>(R.id.edtEditDefinition)
+        val etUsage = dialogLayout.findViewById<EditText>(R.id.edtEditUsage)
         val btnSelectImage = dialogLayout.findViewById<Button>(R.id.btnEditImage)
 
         etWord.setText(card.word)
         etMeaning.setText(card.meaning)
         etDefinition.setText(card.definition)
+        etUsage.setText(card.usage)
 
         btnSelectImage.setOnClickListener {}
 
@@ -172,6 +146,7 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
                 card.word = etWord.text.toString()
                 card.meaning = etMeaning.text.toString()
                 card.definition = etDefinition.text.toString()
+                card.usage = etUsage.text.toString()
 
                 updateDeckInList()
                 loadDeckData()

@@ -13,6 +13,13 @@
         android:hint="Word" />
 
     <EditText
+        android:id="@+id/edtMeaning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:hint="Meaning" />
+
+    <EditText
         android:id="@+id/edtDefinition"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,11 +27,11 @@
         android:hint="Definition (Opitional)" />
 
     <EditText
-        android:id="@+id/edtMeaning"
+        android:id="@+id/edtUsage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:hint="Meaning" />
+        android:hint="Usage (Opitional)" />
 
     <Button
         android:layout_width="wrap_content"

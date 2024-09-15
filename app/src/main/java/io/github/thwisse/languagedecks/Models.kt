@@ -9,6 +9,7 @@ data class Card(
     var word: String,
     var meaning: String,
     var definition: String,
+    var usage: String,
     var image: String? = null,
     var isLearned: Boolean = false,
     var order: Int = 0,
