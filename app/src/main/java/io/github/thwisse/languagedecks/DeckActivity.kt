@@ -39,11 +39,27 @@ class DeckActivity : AppCompatActivity() {
         val deckList = sharedPreferencesManager.getDecks()
         currentDeck = deckList.find { it.deckName == deckName } ?: Deck(deckName ?: "")
 
+        updateToolbar()
+
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFragmentView) as NavHostFragment
         val navController = navHostFragment.navController
 
         binding.bottomNavigationView.setupWithNavController(navController)
     }
+
+    fun updateToolbar() {
+        val currentDeck = getCurrentDeck()
+        val cardCount = currentDeck.cards.size
+        binding.materialToolbarDeck.title = currentDeck.deckName
+        binding.materialToolbarDeck.subtitle = "$cardCount words"
+    }
+
+    fun getCurrentDeck(): Deck {
+        val deckList = sharedPreferencesManager.getDecks()
+        val deckName = intent.getStringExtra("deckName")
+        return deckList.find { it.deckName == deckName } ?: Deck(deckName ?: "")
+    }
+
 
     private fun enableEdgeToEdge() {
         WindowCompat.setDecorFitsSystemWindows(window, false)

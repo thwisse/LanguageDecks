@@ -65,6 +65,7 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
         super.onResume()
         loadDeckData()
         cardAdapter.notifyDataSetChanged()
+        (activity as? DeckActivity)?.updateToolbar()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -92,6 +93,8 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
         cardList.addAll(currentDeck.cards.filter { it.isLearned }.sortedBy { it.order })
 
         cardAdapter.notifyDataSetChanged()
+
+        (activity as? DeckActivity)?.updateToolbar()
     }
 
 
@@ -189,6 +192,7 @@ class LearnedFragment : Fragment(), CardStateChangeListener {
                 updateDeckInList()
                 loadDeckData()
                 cardAdapter.notifyDataSetChanged()
+                (activity as? DeckActivity)?.updateToolbar()
             }
             setNegativeButton("Cancel") { dialog, which -> }
             show()

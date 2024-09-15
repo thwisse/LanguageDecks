@@ -87,6 +87,7 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
 
         binding.fabAddCard.setOnClickListener {
             showAddCardDialog()
+            (activity as? DeckActivity)?.updateToolbar()
         }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
@@ -113,6 +114,7 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         super.onResume()
         loadDeckData()
         cardAdapter.notifyDataSetChanged()
+        (activity as? DeckActivity)?.updateToolbar()
     }
 
     private fun shuffleCards() {
@@ -156,6 +158,8 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         cardList.addAll(currentDeck.cards.filter { !it.isLearned }.sortedBy { it.order })
 
         cardAdapter.notifyDataSetChanged()
+
+        (activity as? DeckActivity)?.updateToolbar()
     }
 
     private fun showAddCardDialog() {
@@ -180,8 +184,8 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
         builder.setView(dialogLayout)
             .setPositiveButton("Add") { dialog, _ ->
                 val word = etWord.text.toString()
-                val meaning = etMeaning.text.toString()
                 val definition = etDefinition.text.toString()
+                val meaning = etMeaning.text.toString()
 
                 if (word.isNotEmpty() && meaning.isNotEmpty()) {
                     val maxOrder = currentDeck.cards.maxOfOrNull { it.order } ?: 0
@@ -198,6 +202,8 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
                     updateDeckInList()
                     loadDeckData()
                     dialog.dismiss()
+
+                    (activity as? DeckActivity)?.updateToolbar()
                 }
             }
             .setNegativeButton("Cancel") { dialog, _ ->
@@ -293,8 +299,8 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
             setView(dialogLayout)
             setPositiveButton("Save") { dialog, which ->
                 card.word = etWord.text.toString()
-                card.meaning = etMeaning.text.toString()
                 card.definition = etDefinition.text.toString()
+                card.meaning = etMeaning.text.toString()
 
                 if (selectedBitmap != null) {
                     val base64Image = bitmapToBase64(selectedBitmap!!)
@@ -323,6 +329,7 @@ class UnlearnedFragment : Fragment(), CardStateChangeListener {
                 updateDeckInList()
                 loadDeckData()
                 cardAdapter.notifyDataSetChanged()
+                (activity as? DeckActivity)?.updateToolbar()
             }
             setNegativeButton("Cancel") { dialog, which -> }
             show()

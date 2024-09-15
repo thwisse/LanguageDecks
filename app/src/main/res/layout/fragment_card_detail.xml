@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:padding="32dp">
-
+    
     <TextView
         android:id="@+id/textViewWord"
         android:layout_width="wrap_content"
@@ -17,27 +17,28 @@
         android:padding="5dp"/>
 
     <TextView
+        android:id="@+id/textViewDefinition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:text="Definition"
+        android:padding="5dp" />
+
+    <TextView
         android:id="@+id/textViewMeaning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Meaning"
         android:padding="5dp"
+        android:textSize="18sp"
         android:paddingTop="8dp" />
-
-    <TextView
-        android:id="@+id/textViewDefinition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Definition"
-        android:padding="5dp" />
 
     <Button
         android:id="@+id/btnIslearningChanger"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Toggle Learned"
-        android:layout_margin="5dp"
-        android:textSize="15sp"/>
+        android:layout_margin="15dp"/>
 
     <ImageView
         android:id="@+id/imgViewCardImage"

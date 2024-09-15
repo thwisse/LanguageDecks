@@ -13,18 +13,18 @@
         android:hint="Word" />
 
     <EditText
-        android:id="@+id/edtEditMeaning"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:hint="Meaning" />
-
-    <EditText
         android:id="@+id/edtEditDefinition"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:hint="Definition (Opitional)" />
+
+    <EditText
+        android:id="@+id/edtEditMeaning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:hint="Meaning" />
 
     <Button
         android:layout_width="wrap_content"
@@ -32,6 +32,7 @@
         android:text="Edit Image"
         android:id="@+id/btnEditImage"
         android:layout_gravity="center"
+        android:layout_margin="15dp"
         android:scaleType="fitCenter"/>
 
     <ImageView
@@ -40,6 +41,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="Preview Image"
         android:layout_gravity="center"
+        android:layout_margin="5dp"
         android:scaleType="fitCenter"/>
 
 </LinearLayout>
